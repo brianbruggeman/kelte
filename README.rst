@@ -10,16 +10,16 @@ Motivation
 
 Installation
 ------------
-To install rl, simply:
+To install `kelte`, simply:
 
-    $ pip install -e git+https://github.com/brianbruggeman/rl
+    $ pip install -e git+https://github.com/brianbruggeman/kelte
 
 Note:
 
     This package uses scipy and numpy which may not install out of the box.  If you run
     into an error, then simply run the following:
 
-        (unset LD_FLAGS && pip install -e git+https://github.com/brianbruggeman/rl)
+        (unset LD_FLAGS && pip install -e git+https://github.com/brianbruggeman/kelte)
 
 
 Documentation
