@@ -1,2 +1,2 @@
 # Package command-line interface
-kelte = kelte.cli.kelte:run
+kelte = kelte.__main__:run

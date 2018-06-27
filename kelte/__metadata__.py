@@ -1,6 +1,5 @@
-from __future__ import absolute_import, division, print_function
-
-from pkg_resources import parse_version
+import pkg_resources
+import subprocess
 
 __all__ = (
     '__name__', '__description__', '__version__', '__author__',
@@ -43,10 +42,22 @@ __classifiers__ = [
 # ----------------------------------------------------------------------
 # Programmatic values (Do not update)
 # ----------------------------------------------------------------------
-__version__ = parse_version(__ver__).public
+def _run(cmd):
+    proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    stdout = proc.stdout.decode('utf-8').strip('\n') if proc.returncode == 0 else None
+    return stdout
+
+
+# Programmatic values
+_sha = _run('git rev-parse --short HEAD')
+if _sha:
+    _sep = '-git.sha.'
+    __ver__ = f'{__ver__}{_sep}{_sha}'
+
+__version__ = pkg_resources.parse_version(__ver__).public
 __version_info__ = tuple(
     int(ver_i)
-    for ver_i in parse_version(__version__).base_version.split('.')
+    for ver_i in pkg_resources.parse_version(__version__).base_version.split('.')
     if ver_i.isdigit()
     )
 

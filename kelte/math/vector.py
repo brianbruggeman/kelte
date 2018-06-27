@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 from enum import Enum
+from dataclasses import dataclass
 
 from .point import Position
 
@@ -29,8 +29,7 @@ class Direction(Enum):
     DOWN_LEFT = DOWN + LEFT
 
 
-
-@dataclass()
+@dataclass
 class Vector:
     direction: Direction = Direction.NORTH
     magnitude: int = 0

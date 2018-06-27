@@ -12,6 +12,7 @@ from .component import Component
 #   Can be labeled through a name, but not required to have a name
 #   Serializable storing and loading
 
+
 @dataclass()
 class Entity:
     id: int = uuid4().hex

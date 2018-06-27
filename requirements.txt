@@ -1,4 +1,9 @@
+dataclasses; python_version == '3.6'
 numpy
 pandas
 scipy
 tdl
+
+
+# deployment required
+packaging
