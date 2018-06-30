@@ -1,5 +1,6 @@
 import datetime
 import enum
+import unicodedata
 from dataclasses import dataclass
 
 import tcod as tdl
@@ -34,14 +35,42 @@ class UserInputType(enum.Enum):
     MOUSE = 2
 
 
-@dataclass()
-class KeyboardEvent:
-    button: int = 0
-    action: UserInputAction = UserInputAction.UNDEFINED
-    label: str = "Undefined"
-    keyboard_modifiers: KeyboardModifiers = KeyboardModifiers()
+class Event:
 
-    timestamp: datetime.datetime = datetime.datetime.utcnow()
+    @property
+    def sdl_event(self):
+        raise NotImplementedError
+
+    @sdl_event.setter
+    def sdl_event(self, value):
+        raise NotImplementedError
+
+
+class KeyboardEvent(Event):
+
+    def __init__(self, label=None, button=None, action=None, **keyboard_modifiers):
+        self.label = label or ''
+
+        if not button and len(self.label) == 1:
+            button = ord(self.label)
+        elif not button and len(self.label) > 1:
+            button = ord(unicodedata.lookup(self.label.upper()))
+        self.button = button or 0
+
+        self.action = action or UserInputAction.UNDEFINED
+        self.keyboard_modifiers = KeyboardModifiers()
+        for mod_name, mod_value in keyboard_modifiers.items():
+            try:
+                setattr(self.keyboard_modifiers, mod_name, mod_value)
+            except AttributeError:
+                pass
+        self.timestamp = datetime.datetime.utcnow()
+
+    def __getattr__(self, item):
+        if hasattr(self.keyboard_modifiers, item):
+            return getattr(self.keyboard_modifiers, item)
+        else:
+            raise AttributeError(f'Could not find "{item}" on {self}')
 
     def __bool__(self):
         return True if self.button != 0 else False
@@ -76,7 +105,6 @@ class KeyboardEvent:
 
     @property
     def tdl_key(self):
-        """Unmapper from tcod types"""
         key = tdl.libtcodpy.Key(
             self.button,
             self.label,
@@ -91,7 +119,6 @@ class KeyboardEvent:
 
     @tdl_key.setter
     def tdl_key(self, value):
-        """Mapper to tcod types"""
         if isinstance(value, tdl.libtcodpy.Key):
             self.button = value.vk
 
@@ -106,6 +133,13 @@ class KeyboardEvent:
 
             self.timestamp = datetime.datetime.utcnow()
 
+    def __hash__(self):
+        button = self.button + hash(self.keyboard_modifiers) << 16
+        return button
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+
     def __str__(self):
         label = self.label or self.button
         key_mod = f'{self.keyboard_modifiers}+' if self.keyboard_modifiers else ''
@@ -114,7 +148,7 @@ class KeyboardEvent:
 
 
 @dataclass()
-class MouseEvent:
+class MouseEvent(Event):
     pixel_position: Position = Position(0, 0)
     delta_pixel: Position = Position(0, 0)
     coordinate_position: Position = Position(0, 0)
@@ -227,6 +261,31 @@ class MouseEvent:
             self.pixel_position = Position(value.x, value.y)
             self.delta_pixel = Position(value.xrel, value.yrel)
 
+    def __hash__(self):
+        buttons = (
+            1 << 0 if self.left_button_held else 0
+            + 1 << 1 if self.left_button_released else 0
+            + 1 << 2 if self.right_button_held else 0
+            + 1 << 3 if self.right_button_released else 0
+            + 1 << 4 if self.middle_button_held else 0
+            + 1 << 5 if self.middle_button_released else 0
+            + 1 << 6 if self.click_count == 1 else 0
+            + 1 << 7 if self.click_count == 2 else 0
+        )
+
+        hashable = (
+            self.pixel_position.x, self.pixel_position.y,
+            self.delta_pixel.x, self.delta_pixel.y,
+            self.coordinate_position.x, self.coordinate_position.y,
+            self.delta_coordinate.x, self.delta_coordinate.y,
+            self.wheel_vector,
+            buttons,
+        )
+        return hash(hashable)
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+
     def __str__(self):
         string = [f'[{self.timestamp}]', 'MOUSE']
         if self.wheel_vector.name != 'NONE':
@@ -253,27 +312,20 @@ class MouseEvent:
         return ' '.join(string)
 
 
+class QuitEvent(Event):
+    timestamp: datetime.datetime = datetime.datetime.utcnow()
+
+    @property
+    def sdl_event(self):
+        pass
+
+    @sdl_event.setter
+    def sdl_event(self, value):
+        self.timestamp = datetime.datetime.utcnow()
+
+
 def get_events(timeout: int = None, blocking: bool = True, **event_filters):
-    filters = _setup_filtering(**event_filters)
-
-    user_event_mapping = {}
-    if filters.keyboard:
-        if filters.pressed:
-            user_event_mapping[tdl.lib.SDL_KEYDOWN] = KeyboardEvent
-        if filters.released:
-            user_event_mapping[tdl.lib.SDL_KEYUP] = KeyboardEvent
-
-    if filters.mouse_wheel:
-        user_event_mapping[tdl.lib.SDL_MOUSEWHEEL] = MouseEvent
-
-    if filters.mouse_motion:
-        user_event_mapping[tdl.lib.SDL_MOUSEMOTION] = MouseEvent
-
-    if filters.mouse_button:
-        if filters.pressed:
-            user_event_mapping[tdl.lib.SDL_MOUSEBUTTONDOWN] = MouseEvent
-        if filters.released:
-            user_event_mapping[tdl.lib.SDL_MOUSEBUTTONUP] = MouseEvent
+    user_event_mapping = _setup_filtering(**event_filters)
 
     if timeout is not None:
         tdl.lib.SDL_WaitEventTimeout(tdl.ffi.NULL, timeout)
@@ -284,11 +336,11 @@ def get_events(timeout: int = None, blocking: bool = True, **event_filters):
     sdl_event = tdl.ffi.new('SDL_Event*')
     while tdl.lib.SDL_PollEvent(sdl_event):
         if sdl_event.type in user_event_mapping:
-            Event = user_event_mapping[sdl_event.type]
-            event = Event()
+            event = user_event_mapping[sdl_event.type]()
             event.sdl_event = sdl_event
             if event:
                 yield event
+                # tdl.lib.SDL_FlushEvent(sdl_event)
 
 
 def _setup_filtering(**event_filters):
@@ -298,7 +350,8 @@ def _setup_filtering(**event_filters):
         'mouse_motion': True,
         'mouse_button': True,
         'pressed': True,
-        'released': True
+        'released': True,
+        'quit': True
         }
     event_filters = event_filters or {}
 
@@ -323,5 +376,29 @@ def _setup_filtering(**event_filters):
             event_filters.setdefault(name, value)
 
     filters = munchify(event_filters)
-    return filters
+
+    user_event_mapping = {}
+    if filters.keyboard:
+        if filters.pressed:
+            user_event_mapping[tdl.lib.SDL_KEYDOWN] = KeyboardEvent
+        if filters.released:
+            user_event_mapping[tdl.lib.SDL_KEYUP] = KeyboardEvent
+
+    if filters.mouse_wheel:
+        user_event_mapping[tdl.lib.SDL_MOUSEWHEEL] = MouseEvent
+
+    if filters.mouse_motion:
+        user_event_mapping[tdl.lib.SDL_MOUSEMOTION] = MouseEvent
+
+    if filters.mouse_button:
+        if filters.pressed:
+            user_event_mapping[tdl.lib.SDL_MOUSEBUTTONDOWN] = MouseEvent
+        if filters.released:
+            user_event_mapping[tdl.lib.SDL_MOUSEBUTTONUP] = MouseEvent
+
+    if filters.quit:
+        user_event_mapping[tdl.lib.SDL_QUIT] = QuitEvent
+
+    return user_event_mapping
+
 

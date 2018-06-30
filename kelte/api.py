@@ -1,9 +1,9 @@
 import tcod as tdl
 
 from .config import settings
-from .ecs import Entity
-from .math import Position
-from .ui.event import get_events
+from .ecs import Entity, Event
+from .math import Position, Direction
+from .ui.event import get_events, QuitEvent, KeyboardEvent, KeyboardModifiers
 from .utils import terminal
 
 
@@ -19,7 +19,7 @@ def initialize(debug=None, verbose=None):
     )
 
     # Create a player
-    settings.player = Entity()
+    settings.player = Entity(name='player')
     position = Position(settings.width // 2, settings.height // 2)
     settings.player.add_component("position", position)
     settings.player.add_component("tile", "@")
@@ -28,24 +28,76 @@ def initialize(debug=None, verbose=None):
     return settings
 
 
+def convert_event(event):
+    shift_mod = KeyboardModifiers()
+    shift_mod.shift = True
+    # wasd_movement_mapper = {
+    #     # Cardinal
+    #     KeyboardEvent('a'): Direction.LEFT,
+    #     KeyboardEvent('x'): Direction.DOWN,
+    #     KeyboardEvent('w'): Direction.UP,
+    #     KeyboardEvent('d'): Direction.RIGHT,
+    #
+    #     # Diagonals
+    #     KeyboardEvent('q'): Direction.UP_LEFT,
+    #     KeyboardEvent('e'): Direction.UP_RIGHT,
+    #     KeyboardEvent('z'): Direction.DOWN_LEFT,
+    #     KeyboardEvent('c'): Direction.DOWN_RIGHT,
+    #     }
+
+    vim_movement_mapper = {
+        # Cardinal
+        KeyboardEvent('h'): Direction.LEFT,
+        KeyboardEvent('j'): Direction.DOWN,
+        KeyboardEvent('k'): Direction.UP,
+        KeyboardEvent('l'): Direction.RIGHT,
+
+        # Diagonals
+        KeyboardEvent('y'): Direction.UP_LEFT,
+        KeyboardEvent('u'): Direction.UP_RIGHT,
+        KeyboardEvent('b'): Direction.DOWN_LEFT,
+        KeyboardEvent('n'): Direction.DOWN_RIGHT,
+        }
+
+    movement = vim_movement_mapper.get(event)  # or wasd_movement_mapper.get(event)
+    if movement:
+        event = Event('MOVE', settings.player, movement)
+        print(event)
+
+    if event == KeyboardEvent('escape'):
+        exit(0)
+
+    return event
+
+
+def cycle():
+    done = False
+    tdl.console_set_default_foreground(settings.main_console, tdl.white)
+
+    for event in get_events(released=False, mouse_motion=False):
+        event = convert_event(event)
+        if event.type == 'MOVE':
+            entity = event.target
+            tile = settings.player.tile.data
+            old_pos = entity.position
+            new_pos = old_pos + event.data
+            tdl.console_put_char(settings.main_console, old_pos.x, old_pos.y, ' ', tdl.BKGND_NONE)
+            tdl.console_put_char(settings.main_console, new_pos.x, new_pos.y, tile, tdl.BKGND_NONE)
+
+
+    tdl.console_flush()
+    return done
+
+
 def main(debug=None, verbose=None):
     """Main game loop"""
     verbose = True if debug else max(int(verbose or 0), 0)  # cap minimum at 0
 
+    pos = settings.player.position
+    tdl.console_put_char(settings.main_console, pos.x, pos.y, '@', tdl.BKGND_NONE)
     while not tdl.console_is_window_closed():
-        # event_type_flags = tdl.EVENT_KEY_PRESS | tdl.EVENT_MOUSE
-        # tdl.sys_check_for_event(event_type_flags, tdl_key, tdl_mouse)
-
-        for event in get_events(mouse_motion=False):
-
-            print(event)
-
-        tdl.console_set_default_foreground(settings.main_console, tdl.white)
-
-        pos = settings.player.position
-        tile = settings.player.tile.data
-        tdl.console_put_char(settings.main_console, pos.x, pos.y, tile, tdl.BKGND_NONE)
-        tdl.console_flush()
+        if cycle():
+            break
 
     terminal.echo("Finished", verbose=verbose)
 
@@ -53,5 +105,7 @@ def main(debug=None, verbose=None):
 def run(debug=None, verbose=None):
     """Runs game"""
     verbose = True if debug else max(int(verbose or 0), 0)  # cap minimum at 0
+    if debug:
+        print(settings)
     initialize(verbose=verbose, debug=debug)
     main(verbose=verbose, debug=debug)

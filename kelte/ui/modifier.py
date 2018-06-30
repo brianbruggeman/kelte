@@ -113,6 +113,18 @@ class KeyboardModifiers:
             return True
         return False
 
+    def __hash__(self):
+        number = (
+            1 << 0 if self.shift else 0
+            + 1 << 1 if self.alt else 0
+            + 1 << 2 if self.control else 0
+            + 1 << 3 if self.meta else 0
+            + 1 << 4 if self.num_key else 0
+            + 1 << 5 if self.caps_key else 0
+            + 1 << 6 if self.mode_key else 0
+            )
+        return number
+
     def __str__(self):
         string = []
         if self.shift:

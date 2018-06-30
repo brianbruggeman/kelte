@@ -22,6 +22,9 @@ class Position(typing.NamedTuple):
         value = self
         if isinstance(other, Position):
             value = Position(other.x + self.x, other.y + self.y)
+        else:
+            self.x += other[0]
+            self.y += other[1]
         return value
 
     def __sub__(self, other):
@@ -35,6 +38,12 @@ class Position(typing.NamedTuple):
             if mine != theirs:
                 return False
         return True
+
+    def __hash__(self):
+        # cap this at what?
+        x_hash = hash(self.x)
+        y_hash = hash(self.y) << 4096
+        return x_hash + y_hash
 
     def distance(self, other, func=None) -> float:
         if not isinstance(other, tuple):

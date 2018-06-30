@@ -67,3 +67,9 @@ class Component(metaclass=EcsRegistry):
 
     def __eq__(self, other):
         return self.data == other
+
+    def __add__(self, other):
+        Class = self.__class__
+        data = self.data + other
+        inst = Class(self.entity, self.name, data, self.id)
+        return inst

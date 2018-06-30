@@ -1,10 +1,17 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+from munch import munchify
+
+from .__metadata__ import package_metadata
+
+pkg_data = munchify(package_metadata)
 
 @dataclass()
 class Settings:
     """Basic defaults"""
+
+    name: str = pkg_data.name
 
     repo_path: Path = Path(__file__).parent.parent
     assets_path: Path = repo_path / "assets"

@@ -25,3 +25,6 @@ class Entity:
 
     def remove_component(self, name):
         delattr(self, name)
+
+    def __hash__(self):
+        return hash(self.id)

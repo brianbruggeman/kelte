@@ -34,6 +34,18 @@ class Direction(Enum):
             if value == other:
                 return getattr(cls, name)
 
+    def __get__(self, obj, type=None):
+        return self.value
+
+    def __set__(self, obj, value):
+        self.value = value
+
+    def __len__(self):
+        return len(self.value)
+
+    def __getitem__(self, item):
+        return self.value[item]
+
     def __iter__(self):
         yield from self.value
 
