@@ -77,6 +77,11 @@ def cycle():
     done = False
 
     for event in get_events(released=False, mouse_motion=False):
+
+        if isinstance(event, QuitEvent):
+            done = True
+            break
+
         event = convert_event(event)
         if event and event.type == 'MOVE':
             entity = event.target
@@ -84,7 +89,7 @@ def cycle():
             old_pos = entity.position
             new_pos = old_pos + event.data
 
-            tdl.console_set_default_foreground(settings.main_console, tdl.grey)
+            tdl.console_set_default_foreground(settings.main_console, tdl.darker_sepia)
             tdl.console_put_char(settings.main_console, old_pos.x, old_pos.y, '.', tdl.BKGND_NONE)
             tdl.console_set_default_foreground(settings.main_console, tdl.yellow)
             tdl.console_put_char(settings.main_console, new_pos.x, new_pos.y, tile, tdl.BKGND_NONE)
@@ -98,7 +103,7 @@ def main(debug=None, verbose=None):
     verbose = True if debug else max(int(verbose or 0), 0)  # cap minimum at 0
 
     # fill map
-    tdl.console_set_default_foreground(settings.main_console, tdl.grey)
+    tdl.console_set_default_foreground(settings.main_console, tdl.darker_sepia)
     for y in range(settings.height):
         for x in range(settings.width):
             tdl.console_put_char(settings.main_console, x, y, '.', tdl.BKGND_NONE)

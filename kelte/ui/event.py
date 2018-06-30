@@ -57,7 +57,7 @@ class KeyboardEvent(Event):
             button = ord(unicodedata.lookup(self.label.upper()))
         self.button = button or 0
 
-        self.action = action or UserInputAction.UNDEFINED
+        self.action = action or UserInputAction.PRESSED
         self.keyboard_modifiers = KeyboardModifiers()
         for mod_name, mod_value in keyboard_modifiers.items():
             try:
@@ -134,8 +134,17 @@ class KeyboardEvent(Event):
             self.timestamp = datetime.datetime.utcnow()
 
     def __hash__(self):
-        button = self.button + hash(self.keyboard_modifiers) << 16
-        return button
+        return hash((
+            self.button,
+            self.action,
+            self.keyboard_modifiers.shift,
+            self.keyboard_modifiers.alt,
+            self.keyboard_modifiers.control,
+            self.keyboard_modifiers.meta,
+            self.keyboard_modifiers.num_key,
+            self.keyboard_modifiers.caps_key,
+            self.keyboard_modifiers.mode_key
+            ))
 
     def __eq__(self, other):
         return hash(self) == hash(other)
