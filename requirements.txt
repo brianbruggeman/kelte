@@ -1,4 +1,10 @@
+dataclasses; python_version == '3.6'
+freetype-py
+fuzzywuzzy
+munch
 numpy
 pandas
+pillow
+python-Levenshtein
 scipy
 tdl

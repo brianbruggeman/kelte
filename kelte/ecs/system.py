@@ -11,10 +11,10 @@ class System(metaclass=ABCMeta):
         Args:
             ticks (int): Number of ticks since last called
         """
-        raise NotImplementedError('.update method must be implemented by subclass')
+        raise NotImplementedError(".update method must be implemented by subclass")
 
     def __init__(self, name):
         self.name = name
 
     def __repr__(self):
-        return f'{type(self).__name__}(name={self.name}, components={self.components})'
+        return f"{type(self).__name__}(name={self.name}, components={self.components})"

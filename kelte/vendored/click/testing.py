@@ -1,17 +1,16 @@
-import os
-import sys
-import shutil
-import tempfile
 import contextlib
+import os
+import shutil
+import sys
+import tempfile
 
-from ._compat import iteritems, PY2
-
+from ._compat import PY2, iteritems
 
 # If someone wants to vendor click, we want to ensure the
 # correct package is discovered.  Ideally we could use a
 # relative import here but unfortunately Python does not
 # support that.
-clickpkg = sys.modules[__name__.rsplit('.', 1)[0]]
+clickpkg = sys.modules[__name__.rsplit(".", 1)[0]]
 
 
 if PY2:
@@ -22,7 +21,6 @@ else:
 
 
 class EchoingStdin(object):
-
     def __init__(self, input, output):
         self._input = input
         self._output = output
@@ -52,16 +50,16 @@ class EchoingStdin(object):
 
 def make_input_stream(input, charset):
     # Is already an input stream.
-    if hasattr(input, 'read'):
+    if hasattr(input, "read"):
         if PY2:
             return input
         rv = _find_binary_reader(input)
         if rv is not None:
             return rv
-        raise TypeError('Could not find binary reader for input stream.')
+        raise TypeError("Could not find binary reader for input stream.")
 
     if input is None:
-        input = b''
+        input = b""
     elif not isinstance(input, bytes):
         input = input.encode(charset)
     if PY2:
@@ -72,8 +70,7 @@ def make_input_stream(input, charset):
 class Result(object):
     """Holds the captured result of an invoked CLI script."""
 
-    def __init__(self, runner, output_bytes, exit_code, exception,
-                 exc_info=None):
+    def __init__(self, runner, output_bytes, exit_code, exception, exc_info=None):
         #: The runner that created the result
         self.runner = runner
         #: The output as bytes.
@@ -88,13 +85,12 @@ class Result(object):
     @property
     def output(self):
         """The output as unicode string."""
-        return self.output_bytes.decode(self.runner.charset, 'replace') \
-            .replace('\r\n', '\n')
+        return self.output_bytes.decode(self.runner.charset, "replace").replace(
+            "\r\n", "\n"
+        )
 
     def __repr__(self):
-        return '<Result %s>' % (
-            self.exception and repr(self.exception) or 'okay',
-        )
+        return "<Result %s>" % (self.exception and repr(self.exception) or "okay",)
 
 
 class CliRunner(object):
@@ -115,7 +111,7 @@ class CliRunner(object):
 
     def __init__(self, charset=None, env=None, echo_stdin=False):
         if charset is None:
-            charset = 'utf-8'
+            charset = "utf-8"
         self.charset = charset
         self.env = env or {}
         self.echo_stdin = echo_stdin
@@ -125,7 +121,7 @@ class CliRunner(object):
         for it.  The default is the `name` attribute or ``"root"`` if not
         set.
         """
-        return cli.name or 'root'
+        return cli.name or "root"
 
     def make_env(self, overrides=None):
         """Returns the environment overrides for invoking a script."""
@@ -172,21 +168,22 @@ class CliRunner(object):
                 input = EchoingStdin(input, bytes_output)
             input = io.TextIOWrapper(input, encoding=self.charset)
             sys.stdout = sys.stderr = io.TextIOWrapper(
-                bytes_output, encoding=self.charset)
+                bytes_output, encoding=self.charset
+            )
 
         sys.stdin = input
 
         def visible_input(prompt=None):
-            sys.stdout.write(prompt or '')
-            val = input.readline().rstrip('\r\n')
-            sys.stdout.write(val + '\n')
+            sys.stdout.write(prompt or "")
+            val = input.readline().rstrip("\r\n")
+            sys.stdout.write(val + "\n")
             sys.stdout.flush()
             return val
 
         def hidden_input(prompt=None):
-            sys.stdout.write((prompt or '') + '\n')
+            sys.stdout.write((prompt or "") + "\n")
             sys.stdout.flush()
-            return input.readline().rstrip('\r\n')
+            return input.readline().rstrip("\r\n")
 
         def _getchar(echo):
             char = sys.stdin.read(1)
@@ -196,6 +193,7 @@ class CliRunner(object):
             return char
 
         default_color = color
+
         def should_strip_ansi(stream=None, color=None):
             if color is None:
                 return not default_color
@@ -240,8 +238,16 @@ class CliRunner(object):
             clickpkg.utils.should_strip_ansi = old_should_strip_ansi
             clickpkg.formatting.FORCED_WIDTH = old_forced_width
 
-    def invoke(self, cli, args=None, input=None, env=None,
-               catch_exceptions=True, color=False, **extra):
+    def invoke(
+        self,
+        cli,
+        args=None,
+        input=None,
+        env=None,
+        catch_exceptions=True,
+        color=False,
+        **extra
+    ):
         """Invokes a command in an isolated environment.  The arguments are
         forwarded directly to the command line script, the `extra` keyword
         arguments are passed to the :meth:`~clickpkg.Command.main` function of
@@ -275,8 +281,9 @@ class CliRunner(object):
             exit_code = 0
 
             try:
-                cli.main(args=args or (),
-                         prog_name=self.get_default_prog_name(cli), **extra)
+                cli.main(
+                    args=args or (), prog_name=self.get_default_prog_name(cli), **extra
+                )
             except SystemExit as e:
                 if e.code != 0:
                     exception = e
@@ -286,7 +293,7 @@ class CliRunner(object):
                 exit_code = e.code
                 if not isinstance(exit_code, int):
                     sys.stdout.write(str(exit_code))
-                    sys.stdout.write('\n')
+                    sys.stdout.write("\n")
                     exit_code = 1
             except Exception as e:
                 if not catch_exceptions:
@@ -298,11 +305,13 @@ class CliRunner(object):
                 sys.stdout.flush()
                 output = out.getvalue()
 
-        return Result(runner=self,
-                      output_bytes=output,
-                      exit_code=exit_code,
-                      exception=exception,
-                      exc_info=exc_info)
+        return Result(
+            runner=self,
+            output_bytes=output,
+            exit_code=exit_code,
+            exception=exception,
+            exc_info=exc_info,
+        )
 
     @contextlib.contextmanager
     def isolated_filesystem(self):

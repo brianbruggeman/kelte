@@ -9,22 +9,21 @@
     :copyright: (c) 2014 by Armin Ronacher.
     :license: BSD, see LICENSE for more details.
 """
+import math
 import os
 import sys
 import time
-import math
-from ._compat import _default_text_stdout, range_type, PY2, isatty, \
-     open_stream, strip_ansi, term_len, get_best_encoding, WIN
-from .utils import echo
+
+from ._compat import PY2, WIN, _default_text_stdout, get_best_encoding, isatty, open_stream, range_type, strip_ansi, term_len
 from .exceptions import ClickException
+from .utils import echo
 
-
-if os.name == 'nt':
-    BEFORE_BAR = '\r'
-    AFTER_BAR = '\n'
+if os.name == "nt":
+    BEFORE_BAR = "\r"
+    AFTER_BAR = "\n"
 else:
-    BEFORE_BAR = '\r\033[?25l'
-    AFTER_BAR = '\033[?25h\n'
+    BEFORE_BAR = "\r\033[?25l"
+    AFTER_BAR = "\033[?25h\n"
 
 
 def _length_hint(obj):
@@ -40,19 +39,29 @@ def _length_hint(obj):
             hint = get_hint(obj)
         except TypeError:
             return None
-        if hint is NotImplemented or \
-           not isinstance(hint, (int, long)) or \
-           hint < 0:
+        if hint is NotImplemented or not isinstance(hint, (int, long)) or hint < 0:
             return None
         return hint
 
 
 class ProgressBar(object):
-
-    def __init__(self, iterable, length=None, fill_char='#', empty_char=' ',
-                 bar_template='%(bar)s', info_sep='  ', show_eta=True,
-                 show_percent=None, show_pos=False, item_show_func=None,
-                 label=None, file=None, color=None, width=30):
+    def __init__(
+        self,
+        iterable,
+        length=None,
+        fill_char="#",
+        empty_char=" ",
+        bar_template="%(bar)s",
+        info_sep="  ",
+        show_eta=True,
+        show_percent=None,
+        show_pos=False,
+        item_show_func=None,
+        label=None,
+        file=None,
+        color=None,
+        width=30,
+    ):
         self.fill_char = fill_char
         self.empty_char = empty_char
         self.bar_template = bar_template
@@ -61,7 +70,7 @@ class ProgressBar(object):
         self.show_percent = show_percent
         self.show_pos = show_pos
         self.item_show_func = item_show_func
-        self.label = label or ''
+        self.label = label or ""
         if file is None:
             file = _default_text_stdout()
         self.file = file
@@ -73,7 +82,7 @@ class ProgressBar(object):
             length = _length_hint(iterable)
         if iterable is None:
             if length is None:
-                raise TypeError('iterable or length is required')
+                raise TypeError("iterable or length is required")
             iterable = range_type(length)
         self.iter = iter(iterable)
         self.length = length
@@ -99,7 +108,7 @@ class ProgressBar(object):
 
     def __iter__(self):
         if not self.entered:
-            raise RuntimeError('You need to use progress bars in a with block.')
+            raise RuntimeError("You need to use progress bars in a with block.")
         self.render_progress()
         return self
 
@@ -138,19 +147,19 @@ class ProgressBar(object):
             t /= 24
             if t > 0:
                 days = t
-                return '%dd %02d:%02d:%02d' % (days, hours, minutes, seconds)
+                return "%dd %02d:%02d:%02d" % (days, hours, minutes, seconds)
             else:
-                return '%02d:%02d:%02d' % (hours, minutes, seconds)
-        return ''
+                return "%02d:%02d:%02d" % (hours, minutes, seconds)
+        return ""
 
     def format_pos(self):
         pos = str(self.pos)
         if self.length_known:
-            pos += '/%s' % self.length
+            pos += "/%s" % self.length
         return pos
 
     def format_pct(self):
-        return ('% 4d%%' % int(self.pct * 100))[1:]
+        return ("% 4d%%" % int(self.pct * 100))[1:]
 
     def format_progress_line(self):
         show_percent = self.show_percent
@@ -168,9 +177,13 @@ class ProgressBar(object):
             else:
                 bar = list(self.empty_char * (self.width or 1))
                 if self.time_per_iteration != 0:
-                    bar[int((math.cos(self.pos * self.time_per_iteration)
-                        / 2.0 + 0.5) * self.width)] = self.fill_char
-                bar = ''.join(bar)
+                    bar[
+                        int(
+                            (math.cos(self.pos * self.time_per_iteration) / 2.0 + 0.5)
+                            * self.width
+                        )
+                    ] = self.fill_char
+                bar = "".join(bar)
 
         if self.show_pos:
             info_bits.append(self.format_pos())
@@ -183,14 +196,14 @@ class ProgressBar(object):
             if item_info is not None:
                 info_bits.append(item_info)
 
-        return (self.bar_template % {
-            'label': self.label,
-            'bar': bar,
-            'info': self.info_sep.join(info_bits)
-        }).rstrip()
+        return (
+            self.bar_template
+            % {"label": self.label, "bar": bar, "info": self.info_sep.join(info_bits)}
+        ).rstrip()
 
     def render_progress(self):
         from .termui import get_terminal_size
+
         nl = False
 
         if self.is_hidden:
@@ -206,7 +219,7 @@ class ProgressBar(object):
                 new_width = max(0, get_terminal_size()[0] - clutter_length)
                 if new_width < old_width:
                     buf.append(BEFORE_BAR)
-                    buf.append(' ' * self.max_width)
+                    buf.append(" " * self.max_width)
                     self.max_width = new_width
                 self.width = new_width
 
@@ -221,8 +234,8 @@ class ProgressBar(object):
                 self.max_width = line_len
             buf.append(line)
 
-            buf.append(' ' * (clear_width - line_len))
-        line = ''.join(buf)
+            buf.append(" " * (clear_width - line_len))
+        line = "".join(buf)
 
         # Render the line only if it changed.
         if line != self._last_line:
@@ -276,24 +289,25 @@ def pager(text, color=None):
     stdout = _default_text_stdout()
     if not isatty(sys.stdin) or not isatty(stdout):
         return _nullpager(stdout, text, color)
-    pager_cmd = (os.environ.get('PAGER', None) or '').strip()
+    pager_cmd = (os.environ.get("PAGER", None) or "").strip()
     if pager_cmd:
         if WIN:
             return _tempfilepager(text, pager_cmd, color)
         return _pipepager(text, pager_cmd, color)
-    if os.environ.get('TERM') in ('dumb', 'emacs'):
+    if os.environ.get("TERM") in ("dumb", "emacs"):
         return _nullpager(stdout, text, color)
-    if WIN or sys.platform.startswith('os2'):
-        return _tempfilepager(text, 'more <', color)
-    if hasattr(os, 'system') and os.system('(less) 2>/dev/null') == 0:
-        return _pipepager(text, 'less', color)
+    if WIN or sys.platform.startswith("os2"):
+        return _tempfilepager(text, "more <", color)
+    if hasattr(os, "system") and os.system("(less) 2>/dev/null") == 0:
+        return _pipepager(text, "less", color)
 
     import tempfile
+
     fd, filename = tempfile.mkstemp()
     os.close(fd)
     try:
-        if hasattr(os, 'system') and os.system('more "%s"' % filename) == 0:
-            return _pipepager(text, 'more', color)
+        if hasattr(os, "system") and os.system('more "%s"' % filename) == 0:
+            return _pipepager(text, "more", color)
         return _nullpager(stdout, text, color)
     finally:
         os.unlink(filename)
@@ -304,27 +318,27 @@ def _pipepager(text, cmd, color):
     pager through this might support colors.
     """
     import subprocess
+
     env = dict(os.environ)
 
     # If we're piping to less we might support colors under the
     # condition that
-    cmd_detail = cmd.rsplit('/', 1)[-1].split()
-    if color is None and cmd_detail[0] == 'less':
-        less_flags = os.environ.get('LESS', '') + ' '.join(cmd_detail[1:])
+    cmd_detail = cmd.rsplit("/", 1)[-1].split()
+    if color is None and cmd_detail[0] == "less":
+        less_flags = os.environ.get("LESS", "") + " ".join(cmd_detail[1:])
         if not less_flags:
-            env['LESS'] = '-R'
+            env["LESS"] = "-R"
             color = True
-        elif 'r' in less_flags or 'R' in less_flags:
+        elif "r" in less_flags or "R" in less_flags:
             color = True
 
     if not color:
         text = strip_ansi(text)
 
-    c = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE,
-                         env=env)
+    c = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, env=env)
     encoding = get_best_encoding(c.stdin)
     try:
-        c.stdin.write(text.encode(encoding, 'replace'))
+        c.stdin.write(text.encode(encoding, "replace"))
         c.stdin.close()
     except (IOError, KeyboardInterrupt):
         pass
@@ -349,11 +363,12 @@ def _pipepager(text, cmd, color):
 def _tempfilepager(text, cmd, color):
     """Page through text by invoking a program on a temporary file."""
     import tempfile
+
     filename = tempfile.mktemp()
     if not color:
         text = strip_ansi(text)
     encoding = get_best_encoding(sys.stdout)
-    with open_stream(filename, 'wb')[0] as f:
+    with open_stream(filename, "wb")[0] as f:
         f.write(text.encode(encoding))
     try:
         os.system(cmd + ' "' + filename + '"')
@@ -369,9 +384,7 @@ def _nullpager(stream, text, color):
 
 
 class Editor(object):
-
-    def __init__(self, editor=None, env=None, require_save=True,
-                 extension='.txt'):
+    def __init__(self, editor=None, env=None, require_save=True, extension=".txt"):
         self.editor = editor
         self.env = env
         self.require_save = require_save
@@ -380,19 +393,20 @@ class Editor(object):
     def get_editor(self):
         if self.editor is not None:
             return self.editor
-        for key in 'VISUAL', 'EDITOR':
+        for key in "VISUAL", "EDITOR":
             rv = os.environ.get(key)
             if rv:
                 return rv
         if WIN:
-            return 'notepad'
-        for editor in 'vim', 'nano':
-            if os.system('which %s >/dev/null 2>&1' % editor) == 0:
+            return "notepad"
+        for editor in "vim", "nano":
+            if os.system("which %s >/dev/null 2>&1" % editor) == 0:
                 return editor
-        return 'vi'
+        return "vi"
 
     def edit_file(self, filename):
         import subprocess
+
         editor = self.get_editor()
         if self.env:
             environ = os.environ.copy()
@@ -400,47 +414,47 @@ class Editor(object):
         else:
             environ = None
         try:
-            c = subprocess.Popen('%s "%s"' % (editor, filename),
-                                 env=environ, shell=True)
+            c = subprocess.Popen(
+                '%s "%s"' % (editor, filename), env=environ, shell=True
+            )
             exit_code = c.wait()
             if exit_code != 0:
-                raise ClickException('%s: Editing failed!' % editor)
+                raise ClickException("%s: Editing failed!" % editor)
         except OSError as e:
-            raise ClickException('%s: Editing failed: %s' % (editor, e))
+            raise ClickException("%s: Editing failed: %s" % (editor, e))
 
     def edit(self, text):
         import tempfile
 
-        text = text or ''
-        if text and not text.endswith('\n'):
-            text += '\n'
+        text = text or ""
+        if text and not text.endswith("\n"):
+            text += "\n"
 
-        fd, name = tempfile.mkstemp(prefix='editor-', suffix=self.extension)
+        fd, name = tempfile.mkstemp(prefix="editor-", suffix=self.extension)
         try:
             if WIN:
-                encoding = 'utf-8-sig'
-                text = text.replace('\n', '\r\n')
+                encoding = "utf-8-sig"
+                text = text.replace("\n", "\r\n")
             else:
-                encoding = 'utf-8'
+                encoding = "utf-8"
             text = text.encode(encoding)
 
-            f = os.fdopen(fd, 'wb')
+            f = os.fdopen(fd, "wb")
             f.write(text)
             f.close()
             timestamp = os.path.getmtime(name)
 
             self.edit_file(name)
 
-            if self.require_save \
-               and os.path.getmtime(name) == timestamp:
+            if self.require_save and os.path.getmtime(name) == timestamp:
                 return None
 
-            f = open(name, 'rb')
+            f = open(name, "rb")
             try:
                 rv = f.read()
             finally:
                 f.close()
-            return rv.decode('utf-8-sig').replace('\r\n', '\n')
+            return rv.decode("utf-8-sig").replace("\r\n", "\n")
         finally:
             os.unlink(name)
 
@@ -453,18 +467,18 @@ def open_url(url, wait=False, locate=False):
             import urllib
         except ImportError:
             import urllib
-        if url.startswith('file://'):
+        if url.startswith("file://"):
             url = urllib.unquote(url[7:])
         return url
 
-    if sys.platform == 'darwin':
-        args = ['open']
+    if sys.platform == "darwin":
+        args = ["open"]
         if wait:
-            args.append('-W')
+            args.append("-W")
         if locate:
-            args.append('-R')
+            args.append("-R")
         args.append(_unquote_file(url))
-        null = open('/dev/null', 'w')
+        null = open("/dev/null", "w")
         try:
             return subprocess.Popen(args, stderr=null).wait()
         finally:
@@ -472,34 +486,33 @@ def open_url(url, wait=False, locate=False):
     elif WIN:
         if locate:
             url = _unquote_file(url)
-            args = 'explorer /select,"%s"' % _unquote_file(
-                url.replace('"', ''))
+            args = 'explorer /select,"%s"' % _unquote_file(url.replace('"', ""))
         else:
-            args = 'start %s "" "%s"' % (
-                wait and '/WAIT' or '', url.replace('"', ''))
+            args = 'start %s "" "%s"' % (wait and "/WAIT" or "", url.replace('"', ""))
         return os.system(args)
 
     try:
         if locate:
-            url = os.path.dirname(_unquote_file(url)) or '.'
+            url = os.path.dirname(_unquote_file(url)) or "."
         else:
             url = _unquote_file(url)
-        c = subprocess.Popen(['xdg-open', url])
+        c = subprocess.Popen(["xdg-open", url])
         if wait:
             return c.wait()
         return 0
     except OSError:
-        if url.startswith(('http://', 'https://')) and not locate and not wait:
+        if url.startswith(("http://", "https://")) and not locate and not wait:
             import webbrowser
+
             webbrowser.open(url)
             return 0
         return 1
 
 
 def _translate_ch_to_exc(ch):
-    if ch == '\x03':
+    if ch == "\x03":
         raise KeyboardInterrupt()
-    if ch == '\x04':
+    if ch == "\x04":
         raise EOFError()
 
 
@@ -512,19 +525,21 @@ if WIN:
             msvcrt.putchar(rv)
         _translate_ch_to_exc(rv)
         if PY2:
-            enc = getattr(sys.stdin, 'encoding', None)
+            enc = getattr(sys.stdin, "encoding", None)
             if enc is not None:
-                rv = rv.decode(enc, 'replace')
+                rv = rv.decode(enc, "replace")
             else:
-                rv = rv.decode('cp1252', 'replace')
+                rv = rv.decode("cp1252", "replace")
         return rv
+
+
 else:
     import tty
     import termios
 
     def getchar(echo):
         if not isatty(sys.stdin):
-            f = open('/dev/tty')
+            f = open("/dev/tty")
             fd = f.fileno()
         else:
             fd = sys.stdin.fileno()
@@ -544,4 +559,4 @@ else:
         except termios.error:
             pass
         _translate_ch_to_exc(ch)
-        return ch.decode(get_best_encoding(sys.stdin), 'replace')
+        return ch.decode(get_best_encoding(sys.stdin), "replace")

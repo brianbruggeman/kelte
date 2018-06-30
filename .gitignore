@@ -119,3 +119,6 @@ doc/reports
 
 # Pytest
 .pytest_cache/
+
+# Pyinstaller
+*.build/

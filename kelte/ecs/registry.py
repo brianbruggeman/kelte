@@ -4,10 +4,10 @@
 
 
 class EcsRegistry(type):
-
     def __init__(cls, name, bases, namespace):
         super().__init__(name, bases, namespace)
         pass
+
     #
     # def register(self, entry):
     #         raise ValueError(f'Object "{entry}" must be of type but is {type(entry)}')

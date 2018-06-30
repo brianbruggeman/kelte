@@ -2,29 +2,23 @@ import munch
 import pytest
 
 
-@pytest.mark.parametrize('data', [
-    {  # Check for defaults
-        'components': {},
-        'name': None,
-    },
-    {  # Check for a single component
-        'components': [{
-            'name': 'health',
-            'data': 100,
-            }],
-        'name': 'player',
-    },
-    {  # Check for multiple component
-        'components': [{
-                'name': 'health',
-                'data': 100,
-            }, {
-                'name': 'mana',
-                'data': 100,
-            }],
-        'name': 'elf',
-    },
-    ])
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"components": {}, "name": None},  # Check for defaults
+        {  # Check for a single component
+            "components": [{"name": "health", "data": 100}],
+            "name": "player",
+        },
+        {  # Check for multiple component
+            "components": [
+                {"name": "health", "data": 100},
+                {"name": "mana", "data": 100},
+            ],
+            "name": "elf",
+        },
+    ],
+)
 def test_ecs_entity_Entity(data):
     from kelte.ecs.entity import Entity
 

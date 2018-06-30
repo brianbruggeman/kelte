@@ -1,17 +1,16 @@
-import re
+import codecs
 import io
 import os
+import re
 import sys
-import codecs
 from weakref import WeakKeyDictionary
 
-
 PY2 = sys.version_info[0] == 2
-WIN = sys.platform.startswith('win')
+WIN = sys.platform.startswith("win")
 DEFAULT_COLUMNS = 80
 
 
-_ansi_re = re.compile('\033\[((?:\d|;)*)([a-zA-Z])')
+_ansi_re = re.compile("\033\[((?:\d|;)*)([a-zA-Z])")
 
 
 def get_filesystem_encoding():
@@ -22,29 +21,27 @@ def _make_text_stream(stream, encoding, errors):
     if encoding is None:
         encoding = get_best_encoding(stream)
     if errors is None:
-        errors = 'replace'
-    return _NonClosingTextIOWrapper(stream, encoding, errors,
-                                    line_buffering=True)
+        errors = "replace"
+    return _NonClosingTextIOWrapper(stream, encoding, errors, line_buffering=True)
 
 
 def is_ascii_encoding(encoding):
     """Checks if a given encoding is ascii."""
     try:
-        return codecs.lookup(encoding).name == 'ascii'
+        return codecs.lookup(encoding).name == "ascii"
     except LookupError:
         return False
 
 
 def get_best_encoding(stream):
     """Returns the default stream encoding if not found."""
-    rv = getattr(stream, 'encoding', None) or sys.getdefaultencoding()
+    rv = getattr(stream, "encoding", None) or sys.getdefaultencoding()
     if is_ascii_encoding(rv):
-        return 'utf-8'
+        return "utf-8"
     return rv
 
 
 class _NonClosingTextIOWrapper(io.TextIOWrapper):
-
     def __init__(self, stream, encoding, errors, **extra):
         self._stream = stream = _FixupStream(stream)
         io.TextIOWrapper.__init__(self, stream, encoding, errors, **extra)
@@ -53,6 +50,7 @@ class _NonClosingTextIOWrapper(io.TextIOWrapper):
     # was forced upon Python 2, so we need to unbreak
     # it to look like Python 2.
     if PY2:
+
         def write(self, x):
             if isinstance(x, str) or is_bytes(x):
                 try:
@@ -90,7 +88,7 @@ class _FixupStream(object):
         return getattr(self._stream, name)
 
     def read1(self, size):
-        f = getattr(self._stream, 'read1', None)
+        f = getattr(self._stream, "read1", None)
         if f is not None:
             return f(size)
         # We only dispatch to readline instead of read in Python 2 as we
@@ -101,7 +99,7 @@ class _FixupStream(object):
         return self._stream.read(size)
 
     def readable(self):
-        x = getattr(self._stream, 'readable', None)
+        x = getattr(self._stream, "readable", None)
         if x is not None:
             return x()
         try:
@@ -111,20 +109,20 @@ class _FixupStream(object):
         return True
 
     def writable(self):
-        x = getattr(self._stream, 'writable', None)
+        x = getattr(self._stream, "writable", None)
         if x is not None:
             return x()
         try:
-            self._stream.write('')
+            self._stream.write("")
         except Exception:
             try:
-                self._stream.write(b'')
+                self._stream.write(b"")
             except Exception:
                 return False
         return True
 
     def seekable(self):
-        x = getattr(self._stream, 'seekable', None)
+        x = getattr(self._stream, "seekable", None)
         if x is not None:
             return x()
         try:
@@ -145,7 +143,7 @@ if PY2:
     def is_bytes(x):
         return isinstance(x, (buffer, bytearray))
 
-    _identifier_re = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]*$')
+    _identifier_re = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
 
     # For Windows, we need to force stdout/stdin/stderr to binary if it's
     # fetched for that.  This obviously is not the most correct way to do
@@ -170,6 +168,7 @@ if PY2:
     except ImportError:
         set_binary_mode = lambda x: x
     else:
+
         def set_binary_mode(f):
             try:
                 fileno = f.fileno()
@@ -211,10 +210,13 @@ if PY2:
 
     def filename_to_ui(value):
         if isinstance(value, bytes):
-            value = value.decode(get_filesystem_encoding(), 'replace')
+            value = value.decode(get_filesystem_encoding(), "replace")
         return value
+
+
 else:
     import io
+
     text_type = str
     raw_input = input
     string_types = (str,)
@@ -235,10 +237,10 @@ else:
 
     def _is_binary_writer(stream, default=False):
         try:
-            stream.write(b'')
+            stream.write(b"")
         except Exception:
             try:
-                stream.write('')
+                stream.write("")
                 return False
             except Exception:
                 pass
@@ -253,7 +255,7 @@ else:
         if _is_binary_reader(stream, False):
             return stream
 
-        buf = getattr(stream, 'buffer', None)
+        buf = getattr(stream, "buffer", None)
 
         # Same situation here; this time we assume that the buffer is
         # actually binary in case it's closed.
@@ -268,7 +270,7 @@ else:
         if _is_binary_writer(stream, False):
             return stream
 
-        buf = getattr(stream, 'buffer', None)
+        buf = getattr(stream, "buffer", None)
 
         # Same situation here; this time we assume that the buffer is
         # actually binary in case it's closed.
@@ -281,11 +283,11 @@ else:
         # to ASCII.  This appears to happen in certain unittest
         # environments.  It's not quite clear what the correct behavior is
         # but this at least will force Click to recover somehow.
-        return is_ascii_encoding(getattr(stream, 'encoding', None) or 'ascii')
+        return is_ascii_encoding(getattr(stream, "encoding", None) or "ascii")
 
     def _is_compatible_text_stream(stream, encoding, errors):
-        stream_encoding = getattr(stream, 'encoding', None)
-        stream_errors = getattr(stream, 'errors', None)
+        stream_encoding = getattr(stream, "encoding", None)
+        stream_errors = getattr(stream, "errors", None)
 
         # Perfect match.
         if stream_encoding == encoding and stream_errors == errors:
@@ -323,7 +325,7 @@ else:
         # because nobody handles those errors anyways and at this point
         # we're so fundamentally fucked that nothing can repair it.
         if errors is None:
-            errors = 'replace'
+            errors = "replace"
         return _make_text_stream(binary_reader, encoding, errors)
 
     def _force_correct_text_writer(text_writer, encoding, errors):
@@ -351,28 +353,31 @@ else:
         # because nobody handles those errors anyways and at this point
         # we're so fundamentally fucked that nothing can repair it.
         if errors is None:
-            errors = 'replace'
+            errors = "replace"
         return _make_text_stream(binary_writer, encoding, errors)
 
     def get_binary_stdin():
         reader = _find_binary_reader(sys.stdin)
         if reader is None:
-            raise RuntimeError('Was not able to determine binary '
-                               'stream for sys.stdin.')
+            raise RuntimeError(
+                "Was not able to determine binary " "stream for sys.stdin."
+            )
         return reader
 
     def get_binary_stdout():
         writer = _find_binary_writer(sys.stdout)
         if writer is None:
-            raise RuntimeError('Was not able to determine binary '
-                               'stream for sys.stdout.')
+            raise RuntimeError(
+                "Was not able to determine binary " "stream for sys.stdout."
+            )
         return writer
 
     def get_binary_stderr():
         writer = _find_binary_writer(sys.stderr)
         if writer is None:
-            raise RuntimeError('Was not able to determine binary '
-                               'stream for sys.stderr.')
+            raise RuntimeError(
+                "Was not able to determine binary " "stream for sys.stderr."
+            )
         return writer
 
     def get_text_stdin(encoding=None, errors=None):
@@ -395,15 +400,14 @@ else:
 
     def filename_to_ui(value):
         if isinstance(value, bytes):
-            value = value.decode(get_filesystem_encoding(), 'replace')
+            value = value.decode(get_filesystem_encoding(), "replace")
         else:
-            value = value.encode('utf-8', 'surrogateescape') \
-                .decode('utf-8', 'replace')
+            value = value.encode("utf-8", "surrogateescape").decode("utf-8", "replace")
         return value
 
 
 def get_streerror(e, default=None):
-    if hasattr(e, 'strerror'):
+    if hasattr(e, "strerror"):
         msg = e.strerror
     else:
         if default is not None:
@@ -411,20 +415,19 @@ def get_streerror(e, default=None):
         else:
             msg = str(e)
     if isinstance(msg, bytes):
-        msg = msg.decode('utf-8', 'replace')
+        msg = msg.decode("utf-8", "replace")
     return msg
 
 
-def open_stream(filename, mode='r', encoding=None, errors='strict',
-                atomic=False):
+def open_stream(filename, mode="r", encoding=None, errors="strict", atomic=False):
     # Standard streams first.  These are simple because they don't need
     # special handling for the atomic flag.  It's entirely ignored.
-    if filename == '-':
-        if 'w' in mode:
-            if 'b' in mode:
+    if filename == "-":
+        if "w" in mode:
+            if "b" in mode:
                 return get_binary_stdout(), False
             return get_text_stdout(encoding=encoding, errors=errors), False
-        if 'b' in mode:
+        if "b" in mode:
             return get_binary_stdin(), False
         return get_text_stdin(encoding=encoding, errors=errors), False
 
@@ -435,25 +438,27 @@ def open_stream(filename, mode='r', encoding=None, errors='strict',
         return io.open(filename, mode, encoding=encoding, errors=errors), True
 
     # Some usability stuff for atomic writes
-    if 'a' in mode:
+    if "a" in mode:
         raise ValueError(
-            'Appending to an existing file is not supported, because that '
-            'would involve an expensive `copy`-operation to a temporary '
-            'file. Open the file in normal `w`-mode and copy explicitly '
-            'if that\'s what you\'re after.'
+            "Appending to an existing file is not supported, because that "
+            "would involve an expensive `copy`-operation to a temporary "
+            "file. Open the file in normal `w`-mode and copy explicitly "
+            "if that's what you're after."
         )
-    if 'x' in mode:
-        raise ValueError('Use the `overwrite`-parameter instead.')
-    if 'w' not in mode:
-        raise ValueError('Atomic writes only make sense with `w`-mode.')
+    if "x" in mode:
+        raise ValueError("Use the `overwrite`-parameter instead.")
+    if "w" not in mode:
+        raise ValueError("Atomic writes only make sense with `w`-mode.")
 
     # Atomic writes are more complicated.  They work by opening a file
     # as a proxy in the same folder and then using the fdopen
     # functionality to wrap it in a Python file.  Then we wrap it in an
     # atomic file that moves the file over on close.
     import tempfile
-    fd, tmp_filename = tempfile.mkstemp(dir=os.path.dirname(filename),
-                                        prefix='.__atomic-write')
+
+    fd, tmp_filename = tempfile.mkstemp(
+        dir=os.path.dirname(filename), prefix=".__atomic-write"
+    )
 
     if encoding is not None:
         f = io.open(fd, mode, encoding=encoding, errors=errors)
@@ -464,7 +469,7 @@ def open_stream(filename, mode='r', encoding=None, errors='strict',
 
 
 # Used in a destructor call, needs extra protection from interpreter cleanup.
-if hasattr(os, 'replace'):
+if hasattr(os, "replace"):
     _replace = os.replace
     _can_replace = True
 else:
@@ -473,7 +478,6 @@ else:
 
 
 class _AtomicFile(object):
-
     def __init__(self, f, tmp_filename, real_filename):
         self._f = f
         self._tmp_filename = tmp_filename
@@ -515,7 +519,7 @@ get_winterm_size = None
 
 
 def strip_ansi(value):
-    return _ansi_re.sub('', value)
+    return _ansi_re.sub("", value)
 
 
 def should_strip_ansi(stream=None, color=None):
@@ -537,16 +541,18 @@ if WIN:
 
     def _get_argv_encoding():
         import locale
+
         return locale.getpreferredencoding()
 
     if PY2:
-        def raw_input(prompt=''):
+
+        def raw_input(prompt=""):
             sys.stderr.flush()
             if prompt:
                 stdout = _default_text_stdout()
                 stdout.write(prompt)
             stdin = _default_text_stdin()
-            return stdin.readline().rstrip('\r\n')
+            return stdin.readline().rstrip("\r\n")
 
     try:
         import colorama
@@ -588,11 +594,15 @@ if WIN:
 
         def get_winterm_size():
             win = colorama.win32.GetConsoleScreenBufferInfo(
-                colorama.win32.STDOUT).srWindow
+                colorama.win32.STDOUT
+            ).srWindow
             return win.Right - win.Left, win.Bottom - win.Top
+
+
 else:
+
     def _get_argv_encoding():
-        return getattr(sys.stdin, 'encoding', None) or get_filesystem_encoding()
+        return getattr(sys.stdin, "encoding", None) or get_filesystem_encoding()
 
     _get_windows_console_stream = lambda *x: None
 
@@ -610,6 +620,7 @@ def isatty(stream):
 
 def _make_cached_stream_func(src_func, wrapper_func):
     cache = WeakKeyDictionary()
+
     def func():
         stream = src_func()
         try:
@@ -624,25 +635,23 @@ def _make_cached_stream_func(src_func, wrapper_func):
         except Exception:
             pass
         return rv
+
     return func
 
 
-_default_text_stdin = _make_cached_stream_func(
-    lambda: sys.stdin, get_text_stdin)
-_default_text_stdout = _make_cached_stream_func(
-    lambda: sys.stdout, get_text_stdout)
-_default_text_stderr = _make_cached_stream_func(
-    lambda: sys.stderr, get_text_stderr)
+_default_text_stdin = _make_cached_stream_func(lambda: sys.stdin, get_text_stdin)
+_default_text_stdout = _make_cached_stream_func(lambda: sys.stdout, get_text_stdout)
+_default_text_stderr = _make_cached_stream_func(lambda: sys.stderr, get_text_stderr)
 
 
 binary_streams = {
-    'stdin': get_binary_stdin,
-    'stdout': get_binary_stdout,
-    'stderr': get_binary_stderr,
+    "stdin": get_binary_stdin,
+    "stdout": get_binary_stdout,
+    "stderr": get_binary_stderr,
 }
 
 text_streams = {
-    'stdin': get_text_stdin,
-    'stdout': get_text_stdout,
-    'stderr': get_text_stderr,
+    "stdin": get_text_stdin,
+    "stdout": get_text_stdout,
+    "stderr": get_text_stderr,
 }

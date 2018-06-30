@@ -28,9 +28,32 @@ class Direction(Enum):
     DOWN_RIGHT = DOWN + RIGHT
     DOWN_LEFT = DOWN + LEFT
 
+    @classmethod
+    def get(cls, other):
+        for name, value in cls.__members__.items():
+            if value == other:
+                return getattr(cls, name)
+
+    def __get__(self, obj, type=None):
+        return self.value
+
+    def __set__(self, obj, value):
+        self.value = value
+
+    def __len__(self):
+        return len(self.value)
+
+    def __getitem__(self, item):
+        return self.value[item]
+
+    def __iter__(self):
+        yield from self.value
+
+    def __str__(self):
+        return self.name
 
 
-@dataclass()
+@dataclass
 class Vector:
     direction: Direction = Direction.NORTH
     magnitude: int = 0

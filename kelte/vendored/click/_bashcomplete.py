@@ -1,11 +1,11 @@
 import os
 import re
-from .utils import echo
-from .parser import split_arg_string
+
 from .core import MultiCommand, Option
+from .parser import split_arg_string
+from .utils import echo
 
-
-COMPLETION_SCRIPT = '''
+COMPLETION_SCRIPT = """
 %(complete_func)s() {
     COMPREPLY=( $( env COMP_WORDS="${COMP_WORDS[*]}" \\
                    COMP_CWORD=$COMP_CWORD \\
@@ -14,18 +14,21 @@ COMPLETION_SCRIPT = '''
 }
 
 complete -F %(complete_func)s -o default %(script_names)s
-'''
+"""
 
-_invalid_ident_char_re = re.compile(r'[^a-zA-Z0-9_]')
+_invalid_ident_char_re = re.compile(r"[^a-zA-Z0-9_]")
 
 
 def get_completion_script(prog_name, complete_var):
-    cf_name = _invalid_ident_char_re.sub('', prog_name.replace('-', '_'))
-    return (COMPLETION_SCRIPT % {
-        'complete_func': '_%s_completion' % cf_name,
-        'script_names': prog_name,
-        'autocomplete_var': complete_var,
-    }).strip() + ';'
+    cf_name = _invalid_ident_char_re.sub("", prog_name.replace("-", "_"))
+    return (
+        COMPLETION_SCRIPT
+        % {
+            "complete_func": "_%s_completion" % cf_name,
+            "script_names": prog_name,
+            "autocomplete_var": complete_var,
+        }
+    ).strip() + ";"
 
 
 def resolve_ctx(cli, prog_name, args):
@@ -60,13 +63,13 @@ def get_choices(cli, prog_name, args, incomplete):
 
 
 def do_complete(cli, prog_name):
-    cwords = split_arg_string(os.environ['COMP_WORDS'])
-    cword = int(os.environ['COMP_CWORD'])
+    cwords = split_arg_string(os.environ["COMP_WORDS"])
+    cword = int(os.environ["COMP_CWORD"])
     args = cwords[1:cword]
     try:
         incomplete = cwords[cword]
     except IndexError:
-        incomplete = ''
+        incomplete = ""
 
     for item in get_choices(cli, prog_name, args, incomplete):
         echo(item)
@@ -75,9 +78,9 @@ def do_complete(cli, prog_name):
 
 
 def bashcomplete(cli, prog_name, complete_var, complete_instr):
-    if complete_instr == 'source':
+    if complete_instr == "source":
         echo(get_completion_script(prog_name, complete_var))
         return True
-    elif complete_instr == 'complete':
+    elif complete_instr == "complete":
         return do_complete(cli, prog_name)
     return False
