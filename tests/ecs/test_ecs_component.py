@@ -2,21 +2,16 @@ import munch
 import pytest
 
 
-@pytest.mark.parametrize('data', [
-    {  # Check the simple case
-        'entity': {
-            'name': 'player',
-            },
-        'component': {
-            'name': 'health',
-            'data': 100
-            },
-        'component_update': {
-            'name': 'mana',
-            'data': 10,
-            }
-    },
-    ])
+@pytest.mark.parametrize(
+    "data",
+    [
+        {  # Check the simple case
+            "entity": {"name": "player"},
+            "component": {"name": "health", "data": 100},
+            "component_update": {"name": "mana", "data": 10},
+        }
+    ],
+)
 def test_ecs_component_Component(data):
     from kelte.ecs import Component, Entity
 

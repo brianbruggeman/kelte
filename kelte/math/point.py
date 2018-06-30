@@ -2,7 +2,6 @@ import typing
 
 from .distance import euclidean_distance
 
-
 # Position Requirements
 #   Provide a simple data store for a point on a grid
 #   Provide a distance function
@@ -12,6 +11,12 @@ from .distance import euclidean_distance
 class Position(typing.NamedTuple):
     x: int = 0
     y: int = 0
+
+    def __bool__(self):
+        return True if self.x or self.y else False
+
+    def __str__(self):
+        return f'({self.x}, {self.y})'
 
     def __add__(self, other):
         value = self
@@ -25,9 +30,15 @@ class Position(typing.NamedTuple):
             value = Position(self.x - other.x, self.y - other.y)
         return value
 
+    def __eq__(self, other):
+        for mine, theirs in zip(self, other):
+            if mine != theirs:
+                return False
+        return True
+
     def distance(self, other, func=None) -> float:
         if not isinstance(other, tuple):
-           raise ValueError(f'{other} must be of type tuple.')
+            raise ValueError(f"{other} must be of type tuple.")
         if not func:
             func = euclidean_distance
         value = func(self, other)

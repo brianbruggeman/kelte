@@ -8,13 +8,12 @@ from kelte.config import settings
 @dataclass()
 class Window:
     id: int = 0
-    name: str = 'main'
+    name: str = "main"
     font_path: typing.Union[str, pathlib.Path] = settings.font_path
     bindings = settings.keyboard_bindings
 
     def handle_event(self, event):
         """Handles event for this window"""
-
 
         # key = UserInputEvent(
         #     button = tdl.KEY_UP,

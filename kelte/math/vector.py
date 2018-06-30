@@ -1,5 +1,5 @@
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
 
 from .point import Position
 
@@ -27,6 +27,18 @@ class Direction(Enum):
     UP_LEFT = UP + LEFT
     DOWN_RIGHT = DOWN + RIGHT
     DOWN_LEFT = DOWN + LEFT
+
+    @classmethod
+    def get(cls, other):
+        for name, value in cls.__members__.items():
+            if value == other:
+                return getattr(cls, name)
+
+    def __iter__(self):
+        yield from self.value
+
+    def __str__(self):
+        return self.name
 
 
 @dataclass

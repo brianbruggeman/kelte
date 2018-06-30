@@ -1,52 +1,49 @@
 import pytest
 
 
-@pytest.mark.parametrize('data', [
-    {},
-    {'alt': True},
-    {'right_alt': True},
-    {'left_alt': True},
-
-    {'shift': True},
-    {'right_shift': True},
-    {'left_shift': True},
-
-    {'meta': True},
-    {'left_meta': True},
-    {'right_meta': True},
-
-    {'control': True},
-    {'right_control': True},
-    {'left_control': True},
-    ])
+@pytest.mark.parametrize(
+    "data",
+    [
+        {},
+        {"alt": True},
+        {"right_alt": True},
+        {"left_alt": True},
+        {"shift": True},
+        {"right_shift": True},
+        {"left_shift": True},
+        {"meta": True},
+        {"left_meta": True},
+        {"right_meta": True},
+        {"control": True},
+        {"right_control": True},
+        {"left_control": True},
+    ],
+)
 def test_keys_KeyModifiers(data):
     from kelte.ui.modifier import KeyboardModifiers
 
     expected = {
-        'left_control': False,
-        'right_control': False,
-        'control': False,
-
-        'left_alt': False,
-        'right_alt': False,
-        'alt': False,
-
-        'left_shift': False,
-        'right_shift': False,
-        'shift': False,
-
-        'left_meta': False,
-        'right_meta': False,
-        'meta': False,
-        }
-    aggregates = ['control', 'shift', 'alt', 'meta']
+        "left_control": False,
+        "right_control": False,
+        "control": False,
+        "left_alt": False,
+        "right_alt": False,
+        "alt": False,
+        "left_shift": False,
+        "right_shift": False,
+        "shift": False,
+        "left_meta": False,
+        "right_meta": False,
+        "meta": False,
+    }
+    aggregates = ["control", "shift", "alt", "meta"]
 
     for key, value in data.items():
         expected[key] = value
         for aggregate in aggregates:
             if key == aggregate:
-                expected[f'left_{aggregate}'] = value
-                expected[f'right_{aggregate}'] = value
+                expected[f"left_{aggregate}"] = value
+                expected[f"right_{aggregate}"] = value
 
             elif aggregate in key:
                 expected[aggregate] = True
@@ -63,4 +60,6 @@ def test_keys_KeyModifiers(data):
         setattr(modifier, key, value)
 
     for key, value in expected.items():
-        assert getattr(modifier, key) == value, f'{key} expected to be {value} but was {getattr(modifier, key)}.'
+        assert (
+            getattr(modifier, key) == value
+        ), f"{key} expected to be {value} but was {getattr(modifier, key)}."

@@ -14,17 +14,16 @@ from .registry import EcsRegistry
 
 
 class Component(metaclass=EcsRegistry):
-
     @property
     def name(self):
-        return getattr(self, '_name', None)
+        return getattr(self, "_name", None)
 
     @name.setter
     def name(self, value):
-        old_name = getattr(self, '_name', None)
+        old_name = getattr(self, "_name", None)
         if old_name:
             delattr(self.entity, old_name)
-        setattr(self, '_name', value)
+        setattr(self, "_name", value)
         setattr(self.entity, value, self)
 
     def __init__(self, entity, name=None, data=None, id=None):
@@ -44,23 +43,23 @@ class Component(metaclass=EcsRegistry):
             return self.data
 
     def __getattr__(self, key):
-        data = object.__getattribute__(self, 'data')
+        data = object.__getattribute__(self, "data")
         if hasattr(data, key):
             return getattr(data, key)
         else:
-            raise AttributeError(f'Attribute, {key}, not found')
+            raise AttributeError(f"Attribute, {key}, not found")
 
     def __delete__(self, instance):
         raise AttributeError
 
     def __repr__(self):
-        return f'{type(self).__name__}(entity={self.entity}, name={self.name}, data={self.data}, id={self.id})'
+        return f"{type(self).__name__}(entity={self.entity}, name={self.name}, data={self.data}, id={self.id})"
 
     def __set__(self, obj, value):
         if obj is None:
             raise AttributeError
         else:
-            setattr(self, 'data', value)
+            setattr(self, "data", value)
             return self.data
 
     def __str__(self):

@@ -5,17 +5,16 @@ import kelte.vendored.click as click
 
 
 @click.command()
-@click.option('-d', '--debug', is_flag=True, help='Run in debug mode.')
-@click.option('-v', '--verbose', count=True, help='Increase verbosity.')
-@click.option('-V', '--version', is_flag=True, help='Show version and exit.')
+@click.option("-d", "--debug", is_flag=True, help="Run in debug mode.")
+@click.option("-v", "--verbose", count=True, help="Increase verbosity.")
+@click.option("-V", "--version", is_flag=True, help="Show version and exit.")
 def run(debug, verbose, version):
     if version:
-        print(f'{package_info.__version__}')
+        print(f"{package_info.__version__}")
         exit(0)
 
     kelte.api.run(debug=debug, verbose=verbose)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()
-

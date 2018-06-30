@@ -1,34 +1,48 @@
 import os
 import sys
 
+from ._compat import (
+    PY2,
+    WIN,
+    _default_text_stderr,
+    _default_text_stdout,
+    auto_wrap_for_ansi,
+    binary_streams,
+    filename_to_ui,
+    get_filesystem_encoding,
+    get_streerror,
+    is_bytes,
+    open_stream,
+    should_strip_ansi,
+    string_types,
+    strip_ansi,
+    text_streams,
+    text_type
+)
 from .globals import resolve_color_default
-
-from ._compat import text_type, open_stream, get_filesystem_encoding, \
-    get_streerror, string_types, PY2, binary_streams, text_streams, \
-    filename_to_ui, auto_wrap_for_ansi, strip_ansi, should_strip_ansi, \
-    _default_text_stdout, _default_text_stderr, is_bytes, WIN
 
 if not PY2:
     from ._compat import _find_binary_writer
 elif WIN:
-    from ._winconsole import _get_windows_argv, \
-         _hash_py_argv, _initial_argv_hash
+    from ._winconsole import _get_windows_argv, _hash_py_argv, _initial_argv_hash
 
 
 echo_native_types = string_types + (bytes, bytearray)
 
 
 def _posixify(name):
-    return '-'.join(name.split()).lower()
+    return "-".join(name.split()).lower()
 
 
 def safecall(func):
     """Wraps a function so that it swallows exceptions."""
+
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except Exception:
             pass
+
     return wrapper
 
 
@@ -38,7 +52,7 @@ def make_str(value):
         try:
             return value.decode(get_filesystem_encoding())
         except UnicodeError:
-            return value.decode('utf-8', 'replace')
+            return value.decode("utf-8", "replace")
     return text_type(value)
 
 
@@ -49,21 +63,21 @@ def make_default_short_help(help, max_length=45):
     done = False
 
     for word in words:
-        if word[-1:] == '.':
+        if word[-1:] == ".":
             done = True
         new_length = result and 1 + len(word) or len(word)
         if total_length + new_length > max_length:
-            result.append('...')
+            result.append("...")
             done = True
         else:
             if result:
-                result.append(' ')
+                result.append(" ")
             result.append(word)
         if done:
             break
         total_length += new_length
 
-    return ''.join(result)
+    return "".join(result)
 
 
 class LazyFile(object):
@@ -73,19 +87,19 @@ class LazyFile(object):
     files for writing.
     """
 
-    def __init__(self, filename, mode='r', encoding=None, errors='strict',
-                 atomic=False):
+    def __init__(
+        self, filename, mode="r", encoding=None, errors="strict", atomic=False
+    ):
         self.name = filename
         self.mode = mode
         self.encoding = encoding
         self.errors = errors
         self.atomic = atomic
 
-        if filename == '-':
-            self._f, self.should_close = open_stream(filename, mode,
-                                                     encoding, errors)
+        if filename == "-":
+            self._f, self.should_close = open_stream(filename, mode, encoding, errors)
         else:
-            if 'r' in mode:
+            if "r" in mode:
                 # Open and close the file in case we're opening it for
                 # reading so that we can catch at least some errors in
                 # some cases early.
@@ -99,7 +113,7 @@ class LazyFile(object):
     def __repr__(self):
         if self._f is not None:
             return repr(self._f)
-        return '<unopened file %r %s>' % (self.name, self.mode)
+        return "<unopened file %r %s>" % (self.name, self.mode)
 
     def open(self):
         """Opens the file if it's not yet open.  This call might fail with
@@ -109,12 +123,12 @@ class LazyFile(object):
         if self._f is not None:
             return self._f
         try:
-            rv, self.should_close = open_stream(self.name, self.mode,
-                                                self.encoding,
-                                                self.errors,
-                                                atomic=self.atomic)
+            rv, self.should_close = open_stream(
+                self.name, self.mode, self.encoding, self.errors, atomic=self.atomic
+            )
         except (IOError, OSError) as e:
             from .exceptions import FileError
+
             raise FileError(self.name, hint=get_streerror(e))
         self._f = rv
         return rv
@@ -143,7 +157,6 @@ class LazyFile(object):
 
 
 class KeepOpenFile(object):
-
     def __init__(self, file):
         self._file = file
 
@@ -221,11 +234,11 @@ def echo(message=None, file=None, nl=True, err=False, color=None):
         message = text_type(message)
 
     if nl:
-        message = message or u''
+        message = message or u""
         if isinstance(message, text_type):
-            message += u'\n'
+            message += u"\n"
         else:
-            message += b'\n'
+            message += b"\n"
 
     # If there is a message, and we're in Python 3, and the value looks
     # like bytes, we manually need to find the binary stream and write the
@@ -272,11 +285,11 @@ def get_binary_stream(name):
     """
     opener = binary_streams.get(name)
     if opener is None:
-        raise TypeError('Unknown standard stream %r' % name)
+        raise TypeError("Unknown standard stream %r" % name)
     return opener()
 
 
-def get_text_stream(name, encoding=None, errors='strict'):
+def get_text_stream(name, encoding=None, errors="strict"):
     """Returns a system stream for text processing.  This usually returns
     a wrapped stream around a binary stream returned from
     :func:`get_binary_stream` but it also can take shortcuts on Python 3
@@ -289,12 +302,13 @@ def get_text_stream(name, encoding=None, errors='strict'):
     """
     opener = text_streams.get(name)
     if opener is None:
-        raise TypeError('Unknown standard stream %r' % name)
+        raise TypeError("Unknown standard stream %r" % name)
     return opener(encoding, errors)
 
 
-def open_file(filename, mode='r', encoding=None, errors='strict',
-              lazy=False, atomic=False):
+def open_file(
+    filename, mode="r", encoding=None, errors="strict", lazy=False, atomic=False
+):
     """This is similar to how the :class:`File` works but for manual
     usage.  Files are opened non lazy by default.  This can open regular
     files as well as stdin/stdout if ``'-'`` is passed.
@@ -319,8 +333,7 @@ def open_file(filename, mode='r', encoding=None, errors='strict',
     """
     if lazy:
         return LazyFile(filename, mode, encoding, errors, atomic=atomic)
-    f, should_close = open_stream(filename, mode, encoding, errors,
-                                  atomic=atomic)
+    f, should_close = open_stream(filename, mode, encoding, errors, atomic=atomic)
     if not should_close:
         f = KeepOpenFile(f)
     return f
@@ -400,16 +413,18 @@ def get_app_dir(app_name, roaming=True, force_posix=False):
                         application support folder.
     """
     if WIN:
-        key = roaming and 'APPDATA' or 'LOCALAPPDATA'
+        key = roaming and "APPDATA" or "LOCALAPPDATA"
         folder = os.environ.get(key)
         if folder is None:
-            folder = os.path.expanduser('~')
+            folder = os.path.expanduser("~")
         return os.path.join(folder, app_name)
     if force_posix:
-        return os.path.join(os.path.expanduser('~/.' + _posixify(app_name)))
-    if sys.platform == 'darwin':
-        return os.path.join(os.path.expanduser(
-            '~/Library/Application Support'), app_name)
+        return os.path.join(os.path.expanduser("~/." + _posixify(app_name)))
+    if sys.platform == "darwin":
+        return os.path.join(
+            os.path.expanduser("~/Library/Application Support"), app_name
+        )
     return os.path.join(
-        os.environ.get('XDG_CONFIG_HOME', os.path.expanduser('~/.config')),
-        _posixify(app_name))
+        os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")),
+        _posixify(app_name),
+    )
