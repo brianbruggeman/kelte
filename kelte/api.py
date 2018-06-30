@@ -2,8 +2,8 @@ import tcod as tdl
 
 from .config import settings
 from .ecs import Entity, Event
-from .math import Position, Direction
-from .ui.event import get_events, QuitEvent, KeyboardEvent, KeyboardModifiers
+from .math import Direction, Position
+from .ui.event import KeyboardEvent, KeyboardModifiers, QuitEvent, get_events
 from .utils import terminal
 
 

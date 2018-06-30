@@ -3,8 +3,8 @@ import subprocess
 
 from .. import __metadata__ as package_info
 from .. import api
-from ..vendored import click
 from ..config import settings
+from ..vendored import click
 
 
 @click.command()

@@ -409,5 +409,3 @@ def _setup_filtering(**event_filters):
         user_event_mapping[tdl.lib.SDL_QUIT] = QuitEvent
 
     return user_event_mapping
-
-
