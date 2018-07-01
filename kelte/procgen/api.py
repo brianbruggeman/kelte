@@ -1,6 +1,7 @@
 import random
 
 from ..math import Position
+from .cooridors import Cooridor
 from .levels import Level
 from .rooms import BoundingBox, Room
 
@@ -31,6 +32,13 @@ def create_level(size: BoundingBox = None, room_count: int = None) -> Level:
 
         if len(level.rooms) == room_count:
             break
+
+    for index, room in enumerate(level.rooms):
+        start = level.rooms[index - 1]
+        end = room
+        cooridor = Cooridor(start, end)
+        level.cooridors.append(cooridor)
+
 
     print(level)
 

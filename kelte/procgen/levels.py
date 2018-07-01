@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 
 from ..math import Position
 from .rooms import Room
+from .cooridors import Cooridor
 
 
 @dataclass()
@@ -10,6 +11,7 @@ class Level:
     width: int = 0
     height: int = 0
     rooms: typing.List[Room] = field(default_factory=list)
+    cooridors: typing.List[Cooridor] = field(default_factory=list)
 
     def __contains__(self, other):
         contained = False
@@ -37,6 +39,10 @@ class Level:
 
         for room in self.rooms:
             for position, tile in room:
+                data[position.y][position.x] = tile
+
+        for cooridor in self.cooridors:
+            for position, tile in cooridor:
                 data[position.y][position.x] = tile
 
         string = '\n'.join(''.join(str(c) for c in r) for r in data)

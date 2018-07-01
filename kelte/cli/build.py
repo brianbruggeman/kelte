@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import shutil
 import subprocess
+import sys
 
 from ..config import settings
 from ..vendored import click
@@ -9,7 +10,12 @@ from ..vendored import click
 @click.command()
 def build():
     package_name = settings.name
-    spec_filepath = settings.repo_path / f'{package_name}.spec'
+    sys_id_mapping = {
+        'darwin': 'mac',
+        'win32': 'win',
+        }
+    sys_id = sys_id_mapping.get(sys.platform, 'linux')
+    spec_filepath = settings.repo_path / f'{package_name}-{sys_id}.spec'
     clean_build()
     command = f'pyinstaller {spec_filepath}'
     subprocess.run(command, shell=True, check=True)

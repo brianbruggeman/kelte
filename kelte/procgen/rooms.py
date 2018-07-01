@@ -25,6 +25,20 @@ class Room:
     bounding_box: BoundingBox = BoundingBox()
 
     @property
+    def center(self):
+        center_x = self.x + self.width // 2
+        center_y = self.y + self.height // 2
+        return Position(center_x, center_y)
+
+    @property
+    def width(self):
+        return self.bounding_box.width
+
+    @property
+    def height(self):
+        return self.bounding_box.height
+
+    @property
     def x(self):
         return self.position.x
 
