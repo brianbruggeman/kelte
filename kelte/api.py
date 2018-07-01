@@ -1,9 +1,12 @@
+import random
+
 import tcod as tdl
 
 from .config import settings
 from .ecs import Entity, Event
+from .procgen import create_dungeon, LevelSize
 from .math import Direction, Position
-from .ui.event import KeyboardEvent, KeyboardModifiers, QuitEvent, get_events
+from .ui.event import KeyboardEvent, QuitEvent, get_events
 from .utils import terminal
 
 
@@ -20,8 +23,6 @@ def initialize(debug=None, verbose=None):
 
     # Create a player
     settings.player = Entity(name='player')
-    position = Position(settings.width // 2, settings.height // 2)
-    settings.player.add_component("position", position)
     settings.player.add_component("tile", "@")
     terminal.echo(f"Created player: {settings.player}", verbose=verbose)
 
@@ -36,20 +37,6 @@ def convert_event(event):
     TODO: Add a movement system
     """
     if isinstance(event, KeyboardEvent):
-        # wasd_movement_mapper = {
-        #     # Cardinal
-        #     KeyboardEvent('a'): Direction.LEFT,
-        #     KeyboardEvent('x'): Direction.DOWN,
-        #     KeyboardEvent('w'): Direction.UP,
-        #     KeyboardEvent('d'): Direction.RIGHT,
-        #
-        #     # Diagonals
-        #     KeyboardEvent('q'): Direction.UP_LEFT,
-        #     KeyboardEvent('e'): Direction.UP_RIGHT,
-        #     KeyboardEvent('z'): Direction.DOWN_LEFT,
-        #     KeyboardEvent('c'): Direction.DOWN_RIGHT,
-        #     }
-
         vim_movement_mapper = {
             # Cardinal
             KeyboardEvent('h'): Direction.LEFT,
@@ -89,8 +76,10 @@ def cycle():
             old_pos = entity.position
             new_pos = old_pos + event.data
 
+            old_tile = settings.current_level[old_pos]
+
             tdl.console_set_default_foreground(settings.main_console, tdl.darker_sepia)
-            tdl.console_put_char(settings.main_console, old_pos.x, old_pos.y, '.', tdl.BKGND_NONE)
+            tdl.console_put_char(settings.main_console, old_pos.x, old_pos.y, old_tile, tdl.BKGND_NONE)
             tdl.console_set_default_foreground(settings.main_console, tdl.yellow)
             tdl.console_put_char(settings.main_console, new_pos.x, new_pos.y, tile, tdl.BKGND_NONE)
 
@@ -102,11 +91,19 @@ def main(debug=None, verbose=None):
     """Main game loop"""
     verbose = True if debug else max(int(verbose or 0), 0)  # cap minimum at 0
 
+    dungeon = create_dungeon(level_size=LevelSize(settings.width, settings.height))
+    settings.dungeon = dungeon
+    settings.current_level = dungeon[0]
+
     # fill map
     tdl.console_set_default_foreground(settings.main_console, tdl.darker_sepia)
-    for y in range(settings.height):
-        for x in range(settings.width):
-            tdl.console_put_char(settings.main_console, x, y, '.', tdl.BKGND_NONE)
+    for y in range(settings.current_level.height):
+        for x in range(settings.current_level.width):
+            tile = settings.current_level[Position(x, y)]
+            tdl.console_put_char(settings.main_console, x, y, tile, tdl.BKGND_NONE)
+
+    random_starting_room = random.choice(settings.current_level.rooms)
+    settings.player.add_component("position", random_starting_room.center)
 
     pos = settings.player.position
     tdl.console_set_default_foreground(settings.main_console, tdl.yellow)

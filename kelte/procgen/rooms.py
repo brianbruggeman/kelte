@@ -4,17 +4,31 @@ from ..math import Position
 
 
 @dataclass()
+class RoomSize:
+    width: int = 0
+    height: int = 0
+
+
+@dataclass()
 class BoundingBox:
     x: int = 0
     y: int = 0
     width: int = 0
     height: int = 0
 
+    @property
+    def x2(self):
+        return self.x + self.width
+
+    @property
+    def y2(self):
+        return self.y + self.height
+
     def __contains__(self, other):
         contained = False
         if isinstance(other, Position):
-            if self.x <= other.x < self.x + self.width:
-                if self.y <= other.y < self.y + self.height:
+            if self.x <= other.x < self.x2:
+                if self.y <= other.y < self.y2:
                     contained = True
         return contained
 
@@ -47,23 +61,26 @@ class Room:
         return self.position.y
 
     @property
+    def x2(self):
+        return self.bounding_box.x2
+
+    @property
+    def y2(self):
+        return self.bounding_box.y2
+
+    @property
     def grid(self):
         if not hasattr(self, '_grid'):
             self._grid = []
-            for y in range(self.bounding_box.height):
+            for y in range(self.y, self.y2):
                 row = []
-                for x in range(self.bounding_box.width):
-                    edge = False
-                    if y in [0, self.bounding_box.height - 1]:
-                        edge = True
-                    elif x in [0, self.bounding_box.width - 1]:
-                        edge = True
-                    if edge:
-                        row.append('#')
-                    else:
-                        row.append('.')
+                for x in range(self.x, self.x2):
+                    row.append('.')
                 self._grid.append(row)
         return self._grid
+
+    def copy(self):
+        return Room(position=self.position, bounding_box=self.bounding_box)
 
     def __iter__(self):
         for y, row in enumerate(self.grid):
@@ -97,3 +114,6 @@ class Room:
             row = ''.join(map(str, row))
             data.append(row)
         return '\n'.join(data)
+
+
+

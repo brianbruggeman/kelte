@@ -12,6 +12,14 @@ class Position(typing.NamedTuple):
     x: int = 0
     y: int = 0
 
+    @property
+    def neighbors(self):
+        for x in [self.x - 1, self.x, self.x + 1]:
+            for y in [self.y - 1, self.y, self.y + 1]:
+                if x == self.x and y == self.y:
+                    continue
+                yield Position(x, y)
+
     def __bool__(self):
         return True if self.x or self.y else False
 

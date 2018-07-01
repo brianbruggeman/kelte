@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from munch import munchify
@@ -23,6 +23,9 @@ class Settings:
     font_path: bool = str(assets_path / "terminal8x8.png")
     main_console: int = 0
     keyboard_bindings = {}
+
+    dungeon: list = field(default_factory=list)
+    current_level: object = None  # actual object
 
 
 settings = Settings()
