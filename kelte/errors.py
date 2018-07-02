@@ -1,2 +1,2 @@
 class BaseError(Exception):
-    """Base error for . package"""
+    """Base error for kelte package"""

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from ..math import Position
+from ..tiles import get_tile
 
 
 @dataclass()
@@ -70,12 +71,13 @@ class Room:
 
     @property
     def grid(self):
-        if not hasattr(self, '_grid'):
+        default_tile = get_tile("floor")
+        if not hasattr(self, "_grid"):
             self._grid = []
             for y in range(self.y, self.y2):
                 row = []
                 for x in range(self.x, self.x2):
-                    row.append('.')
+                    row.append(default_tile.copy())
                 self._grid.append(row)
         return self._grid
 
@@ -111,9 +113,6 @@ class Room:
     def __str__(self):
         data = []
         for y, row in enumerate(self.grid):
-            row = ''.join(map(str, row))
+            row = "".join(map(str, row))
             data.append(row)
-        return '\n'.join(data)
-
-
-
+        return "\n".join(data)

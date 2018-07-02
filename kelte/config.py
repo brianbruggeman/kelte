@@ -7,6 +7,7 @@ from .__metadata__ import package_metadata
 
 pkg_data = munchify(package_metadata)
 
+
 @dataclass()
 class Settings:
     """Basic defaults"""

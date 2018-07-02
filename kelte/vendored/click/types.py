@@ -1,7 +1,15 @@
 import os
 import stat
 
-from ._compat import PY2, _get_argv_encoding, filename_to_ui, get_filesystem_encoding, get_streerror, open_stream, text_type
+from ._compat import (
+    PY2,
+    _get_argv_encoding,
+    filename_to_ui,
+    get_filesystem_encoding,
+    get_streerror,
+    open_stream,
+    text_type,
+)
 from .exceptions import BadParameter
 from .utils import LazyFile, safecall
 

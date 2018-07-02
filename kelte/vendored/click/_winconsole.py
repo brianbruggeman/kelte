@@ -15,7 +15,19 @@ import os
 import sys
 import time
 import zlib
-from ctypes import POINTER, WINFUNCTYPE, byref, c_char, c_char_p, c_int, c_ssize_t, c_ulong, c_void_p, py_object, windll
+from ctypes import (
+    POINTER,
+    WINFUNCTYPE,
+    byref,
+    c_char,
+    c_char_p,
+    c_int,
+    c_ssize_t,
+    c_ulong,
+    c_void_p,
+    py_object,
+    windll,
+)
 from ctypes.wintypes import LPCWSTR, LPWSTR
 
 from ._compat import PY2, _NonClosingTextIOWrapper, text_type

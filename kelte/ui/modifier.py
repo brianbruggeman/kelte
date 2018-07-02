@@ -74,76 +74,88 @@ class KeyboardModifiers:
         mod = (
             tdl.lib.KMOD_LSHIFT & self.left_shift
             | tdl.lib.KMOD_RSHIFT & self.right_shift
-
             | tdl.lib.KMOD_LCTRL & self.left_control
             | tdl.lib.KMOD_RCTL & self.right_control
-
             | tdl.lib.KMOD_LALT & self.left_alt
             | tdl.lib.KMOD_RALT & self.right_alt
-
             | tdl.lib.KMOD_LGUI & self.left_meta
             | tdl.lib.KMOD_RGUI & self.right_meta
-
             | tdl.lib.KMOD_NUM & self.num_key
             | tdl.lib.KMOD_CAPS & self.caps_key
             | tdl.lib.KMOD_MODE & self.mode_key
-            )
+        )
         return mod
 
     @sdl_mod.setter
     def sdl_mod(self, value):
-         self.left_shift = tdl.lib.KMOD_LSHIFT & value
-         self.right_shift = tdl.lib.KMOD_RSHIFT & value
+        self.left_shift = tdl.lib.KMOD_LSHIFT & value
+        self.right_shift = tdl.lib.KMOD_RSHIFT & value
 
-         self.left_control = tdl.lib.KMOD_LCTRL & value
-         self.right_control = tdl.lib.KMOD_RCTRL & value
+        self.left_control = tdl.lib.KMOD_LCTRL & value
+        self.right_control = tdl.lib.KMOD_RCTRL & value
 
-         self.left_alt = tdl.lib.KMOD_LALT & value
-         self.right_alt = tdl.lib.KMOD_RALT & value
+        self.left_alt = tdl.lib.KMOD_LALT & value
+        self.right_alt = tdl.lib.KMOD_RALT & value
 
-         self.left_meta = tdl.lib.KMOD_LGUI & value
-         self.right_meta = tdl.lib.KMOD_RGUI & value
+        self.left_meta = tdl.lib.KMOD_LGUI & value
+        self.right_meta = tdl.lib.KMOD_RGUI & value
 
-         self.num_key = tdl.lib.KMOD_NUM & value
-         self.caps_key = tdl.lib.KMOD_CAPS & value
-         self.mode_key = tdl.lib.KMOD_MODE & value
+        self.num_key = tdl.lib.KMOD_NUM & value
+        self.caps_key = tdl.lib.KMOD_CAPS & value
+        self.mode_key = tdl.lib.KMOD_MODE & value
 
     def __bool__(self):
-        if self.shift or self.alt or self.control or self.meta or self.caps_key or self.num_key or self.mode_key:
+        if (
+            self.shift
+            or self.alt
+            or self.control
+            or self.meta
+            or self.caps_key
+            or self.num_key
+            or self.mode_key
+        ):
             return True
         return False
 
     def __hash__(self):
         number = (
-            1 << 0 if self.shift else 0
-            + 1 << 1 if self.alt else 0
-            + 1 << 2 if self.control else 0
-            + 1 << 3 if self.meta else 0
-            + 1 << 4 if self.num_key else 0
-            + 1 << 5 if self.caps_key else 0
-            + 1 << 6 if self.mode_key else 0
-            )
+            1 << 0
+            if self.shift
+            else 0 + 1 << 1
+            if self.alt
+            else 0 + 1 << 2
+            if self.control
+            else 0 + 1 << 3
+            if self.meta
+            else 0 + 1 << 4
+            if self.num_key
+            else 0 + 1 << 5
+            if self.caps_key
+            else 0 + 1 << 6
+            if self.mode_key
+            else 0
+        )
         return number
 
     def __str__(self):
         string = []
         if self.shift:
-            string.append('SHIFT')
+            string.append("SHIFT")
         if self.control:
-            string.append('CONTROL')
+            string.append("CONTROL")
         if self.alt:
-            string.append('ALT')
+            string.append("ALT")
         if self.meta:
-            string.append('META')
+            string.append("META")
 
         if self.num_key:
-            string.append('NUM')
+            string.append("NUM")
         if self.caps_key:
-            string.append('CAPS')
+            string.append("CAPS")
         if self.mode_key:
-            string.append('MODE')
+            string.append("MODE")
 
-        return '+'.join(string)
+        return "+".join(string)
 
 
 @dataclass()

@@ -1,5 +1,5 @@
-# import numpy as np
-# import scipy.spatial.distance as spsd
+import numpy as np
+import scipy.spatial.distance as spsd
 
 
 def euclidean_distance(*points, strict=None):
@@ -12,5 +12,5 @@ def euclidean_distance(*points, strict=None):
     Returns:
         float: distance value
     """
-    # points = np.array(points)
-    # return spsd.euclidean(*points)
+    points = np.array(points)
+    return spsd.euclidean(*points)

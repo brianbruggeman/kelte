@@ -20,25 +20,27 @@ class Position(typing.NamedTuple):
                     continue
                 yield Position(x, y)
 
+    def __len__(self):
+        return 2
+
     def __bool__(self):
         return True if self.x or self.y else False
 
     def __str__(self):
-        return f'({self.x}, {self.y})'
+        return f"({self.x}, {self.y})"
 
     def __add__(self, other):
-        value = self
         if isinstance(other, Position):
             value = Position(other.x + self.x, other.y + self.y)
         else:
-            self.x += other[0]
-            self.y += other[1]
+            value = Position(other[0] + self.x, other[1] + self.y)
         return value
 
     def __sub__(self, other):
-        value = Position(0, 0)
         if isinstance(other, Position):
             value = Position(self.x - other.x, self.y - other.y)
+        else:
+            value = Position(other[0] - self.x, other[1] - self.y)
         return value
 
     def __eq__(self, other):
@@ -48,10 +50,7 @@ class Position(typing.NamedTuple):
         return True
 
     def __hash__(self):
-        # cap this at what?
-        x_hash = hash(self.x)
-        y_hash = hash(self.y) << 4096
-        return x_hash + y_hash
+        return (self.x, self.y)
 
     def distance(self, other, func=None) -> float:
         if not isinstance(other, tuple):

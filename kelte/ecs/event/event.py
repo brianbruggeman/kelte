@@ -16,8 +16,8 @@ class Event:
         return hash((self.type, self.target, self.data))
 
     def __str__(self):
-        string = [f'[{self.timestamp}]', self.type]
+        string = [f"[{self.timestamp}]", self.type]
         target = self.target.name or self.target.id
         string.append(target)
         string.append(str(self.data))
-        return ' '.join(string)
+        return " ".join(string)

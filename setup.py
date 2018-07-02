@@ -335,7 +335,7 @@ def get_package_requirements(top_path=None):
     include_globs = ["requirements*.txt", "requirements/*.txt"]
     paths = [relpath for relpath in scan_tree(repo_path, include=include_globs)]
     for path in paths:
-        name = ''
+        name = ""
         if path.name == "requirements.txt" and path.parent.name == repo_path.name:
             name = "requirements"
         elif "requirements" in path.parts:

@@ -1,1 +1,6 @@
+# -----------------------------------------------------------------------------
+# Libtcod
+# -----------------------------------------------------------------------------
+export LIBTCOD_DLL_PATH="/usr/local/lib;/usr/lib;$HOME/.local/lib;$HOME/lib"
+
 export LDFLAGS="$LDFLAGS -undefined dynamic_lookup -bundle"

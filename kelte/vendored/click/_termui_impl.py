@@ -14,7 +14,17 @@ import os
 import sys
 import time
 
-from ._compat import PY2, WIN, _default_text_stdout, get_best_encoding, isatty, open_stream, range_type, strip_ansi, term_len
+from ._compat import (
+    PY2,
+    WIN,
+    _default_text_stdout,
+    get_best_encoding,
+    isatty,
+    open_stream,
+    range_type,
+    strip_ansi,
+    term_len,
+)
 from .exceptions import ClickException
 from .utils import echo
 

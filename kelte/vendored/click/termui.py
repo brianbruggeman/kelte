@@ -2,7 +2,16 @@ import os
 import struct
 import sys
 
-from ._compat import DEFAULT_COLUMNS, WIN, get_winterm_size, isatty, raw_input, string_types, strip_ansi, text_type
+from ._compat import (
+    DEFAULT_COLUMNS,
+    WIN,
+    get_winterm_size,
+    isatty,
+    raw_input,
+    string_types,
+    strip_ansi,
+    text_type,
+)
 from .exceptions import Abort, UsageError
 from .globals import resolve_color_default
 from .types import convert_type

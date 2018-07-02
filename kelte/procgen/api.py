@@ -7,7 +7,9 @@ from .levels import Level, LevelSize
 from .rooms import BoundingBox, Room, RoomSize
 
 
-def create_level(size: RoomSize = None, room_count: int = None, rooms: typing.List[Room] = None) -> Level:
+def create_level(
+    size: RoomSize = None, room_count: int = None, rooms: typing.List[Room] = None
+) -> Level:
     room_count = room_count or random.randint(8, 10)
     max_attempts = room_count * 5
     size = size or LevelSize(random.randint(50, 80), random.randint(50, 80))
@@ -17,7 +19,9 @@ def create_level(size: RoomSize = None, room_count: int = None, rooms: typing.Li
 
     for attempt in range(max_attempts):
         # create the room
-        position = Position(random.randint(1, level.width - 1), random.randint(1, level.height -1))
+        position = Position(
+            random.randint(1, level.width - 1), random.randint(1, level.height - 1)
+        )
         new_room = create_room(position=position)
 
         # update its position on the map
@@ -60,7 +64,7 @@ def create_dungeon(level_count=None, level_size=None):
     levels = []
     for level_index in range(level_count):
         if level_index == 0:
-           levels.append(create_level(size=level_size))
+            levels.append(create_level(size=level_size))
         else:
             last_level = levels[-1]
             seed_room = random.choice(last_level.rooms).copy()
@@ -68,6 +72,6 @@ def create_dungeon(level_count=None, level_size=None):
     return levels
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for level in create_dungeon(level_count=2):
         print(level)

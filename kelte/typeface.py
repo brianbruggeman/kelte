@@ -50,6 +50,7 @@ class TypefaceMatch:
         return self.score < other.score
 
 
+@dataclass
 class Typeface:
     name: str
 
@@ -240,10 +241,6 @@ if __name__ == "__main__":
     def run(font_name):
         typeface = Typeface(font_name)
         typeface.build(7, 16)
-        import pdb
-
-        pdb.set_trace()
-        pass
 
     font_name = "Deferral"
     if len(sys.argv) > 1:
@@ -251,16 +248,4 @@ if __name__ == "__main__":
         if args:
             font_name = args[-1]
 
-    if "--pdb" in sys.argv:
-        try:
-            run(font_name)
-        except:
-            import traceback, code
-
-            type, value, tb = sys.exc_info()
-            traceback.print_exc()
-            last_frame = lambda tb=tb: last_frame(tb.tb_next) if tb.tb_next else tb
-            frame = last_frame().tb_frame
-            ns = dict(frame.f_globals)
-            ns.update(frame.f_locals)
-            code.interact(local=ns)
+    run(font_name)
