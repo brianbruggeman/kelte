@@ -27,7 +27,7 @@ Releases
 ^^^^^^^^
 
 * Week 1: [`Mac <week_1_mac_bin_>`_] [`Win <week_1_win_bin_>`_] [`Source zip <week_1_src_zip_>`_] [`Source gzip <week_1_src_gzip_>`_] [`Reddit <week_1_reddit_>`_]
-.. Week 2: [`Mac <week_2_mac_bin_>`_] [`Win <week_2_win_bin_>`_] [`Source zip <week_2_src_zip_>`_] [`Source gzip <week_2_src_gzip_>`_] [`Reddit <week_2_reddit_>`_]
+* Week 2: [`Mac <week_2_mac_bin_>`_] [`Win <week_2_win_bin_>`_] [`Source zip <week_2_src_zip_>`_] [`Source gzip <week_2_src_gzip_>`_] [`Reddit <week_2_reddit_>`_]
 .. Week 3: [`Mac <week_3_mac_bin_>`_] [`Win <week_3_win_bin_>`_] [`Source zip <week_3_src_zip_>`_] [`Source gzip <week_3_src_gzip_>`_] [`Reddit <week_3_reddit_>`_]
 .. Week 4: [`Mac <week_4_mac_bin_>`_] [`Win <week_4_win_bin_>`_] [`Source zip <week_4_src_zip_>`_] [`Source gzip <week_4_src_gzip_>`_] [`Reddit <week_4_reddit_>`_]
 .. Week 5: [`Mac <week_5_mac_bin_>`_] [`Win <week_5_win_bin_>`_] [`Source zip <week_5_src_zip_>`_] [`Source gzip <week_5_src_gzip_>`_] [`Reddit <week_5_reddit_>`_]
