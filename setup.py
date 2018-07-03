@@ -323,7 +323,7 @@ def get_package_metadata(top_path=None):
 
 def get_package_requirements(top_path=None):
     """Find all of the requirements*.txt files and parse them"""
-    repo_path = top_path or os.path.realpath(os.path.dirname(__file__))
+    repo_path = top_path or Path(__file__).parent.absolute()
     requirements = {"extras": {}}
     dependency_links = set()
     # match on:
@@ -335,9 +335,10 @@ def get_package_requirements(top_path=None):
     include_globs = ["requirements*.txt", "requirements/*.txt"]
     paths = [relpath for relpath in scan_tree(repo_path, include=include_globs)]
     for path in paths:
-        if path.name == "requirements.txt" and path.parent.name == "":
+        name = ""
+        if path.name == "requirements.txt" and path.parent.name == repo_path.name:
             name = "requirements"
-        elif "requirements" in map(str, path.parents):
+        elif "requirements" in path.parts:
             name = path.name.replace(path.suffix, "")
         elif "requirements" in path.name:
             name = path.name.replace("requirements", "").lstrip(options)
@@ -456,14 +457,15 @@ def scan_tree(top_path=None, exclude=None, include=None):
             folders_in_tree.update(folders)
             # Yield files
             for filename in files:
+                filepath = Path(root) / filename
                 relpath = rel.joinpath(filename)
                 if relpath not in files_in_tree:
                     files_in_tree.add(relpath)
                     if include is not None:
                         if any(relpath.match(inc) for inc in include):
-                            yield relpath
+                            yield filepath
                     else:
-                        yield relpath
+                        yield filepath
     else:
         for relpath in files_in_tree:
             if include:

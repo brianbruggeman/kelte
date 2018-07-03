@@ -36,7 +36,6 @@ class UserInputType(enum.Enum):
 
 
 class Event:
-
     @property
     def sdl_event(self):
         raise NotImplementedError
@@ -47,9 +46,8 @@ class Event:
 
 
 class KeyboardEvent(Event):
-
     def __init__(self, label=None, button=None, action=None, **keyboard_modifiers):
-        self.label = label or ''
+        self.label = label or ""
 
         if not button and len(self.label) == 1:
             button = ord(self.label)
@@ -94,12 +92,12 @@ class KeyboardEvent(Event):
         # scancode = value.key.keysym.code  # why do I care about this?
         self.button = value.key.keysym.sym
         name = tdl.lib.SDL_GetKeyName(self.button)
-        label = b''
+        label = b""
         for i in range(100):
-            if name[i] == b'\x00':
+            if name[i] == b"\x00":
                 break
             label += name[i]
-        self.label = label.decode('utf-8').lower()
+        self.label = label.decode("utf-8").lower()
         self.keyboard_modifiers.sdl_mod = value.key.keysym.mod
         self.timestamp = datetime.datetime.utcnow()
 
@@ -122,37 +120,51 @@ class KeyboardEvent(Event):
         if isinstance(value, tdl.libtcodpy.Key):
             self.button = value.vk
 
-            self.action = UserInputAction.PRESSED if value.pressed else UserInputAction.RELEASED
+            self.action = (
+                UserInputAction.PRESSED if value.pressed else UserInputAction.RELEASED
+            )
             self.label = value.c if value.c else self.label
 
-            self.keyboard_modifiers.left_alt = True if value.lalt else self.keyboard_modifiers.left_alt
-            self.keyboard_modifiers.right_alt = True if value.ralt else self.keyboard_modifiers.right_alt
-            self.keyboard_modifiers.left_control = True if value.lctrl else self.keyboard_modifiers.left_control
-            self.keyboard_modifiers.right_control = True if value.rctrl else self.keyboard_modifiers.right_control
-            self.keyboard_modifiers.shift = True if value.shift else self.keyboard_modifiers.shift
+            self.keyboard_modifiers.left_alt = (
+                True if value.lalt else self.keyboard_modifiers.left_alt
+            )
+            self.keyboard_modifiers.right_alt = (
+                True if value.ralt else self.keyboard_modifiers.right_alt
+            )
+            self.keyboard_modifiers.left_control = (
+                True if value.lctrl else self.keyboard_modifiers.left_control
+            )
+            self.keyboard_modifiers.right_control = (
+                True if value.rctrl else self.keyboard_modifiers.right_control
+            )
+            self.keyboard_modifiers.shift = (
+                True if value.shift else self.keyboard_modifiers.shift
+            )
 
             self.timestamp = datetime.datetime.utcnow()
 
     def __hash__(self):
-        return hash((
-            self.button,
-            self.action,
-            self.keyboard_modifiers.shift,
-            self.keyboard_modifiers.alt,
-            self.keyboard_modifiers.control,
-            self.keyboard_modifiers.meta,
-            self.keyboard_modifiers.num_key,
-            self.keyboard_modifiers.caps_key,
-            self.keyboard_modifiers.mode_key
-            ))
+        return hash(
+            (
+                self.button,
+                self.action,
+                self.keyboard_modifiers.shift,
+                self.keyboard_modifiers.alt,
+                self.keyboard_modifiers.control,
+                self.keyboard_modifiers.meta,
+                self.keyboard_modifiers.num_key,
+                self.keyboard_modifiers.caps_key,
+                self.keyboard_modifiers.mode_key,
+            )
+        )
 
     def __eq__(self, other):
         return hash(self) == hash(other)
 
     def __str__(self):
         label = self.label or self.button
-        key_mod = f'{self.keyboard_modifiers}+' if self.keyboard_modifiers else ''
-        string = f'[{self.timestamp}] {self.action.name} {key_mod}{label}'
+        key_mod = f"{self.keyboard_modifiers}+" if self.keyboard_modifiers else ""
+        string = f"[{self.timestamp}] {self.action.name} {key_mod}{label}"
         return string
 
 
@@ -257,10 +269,22 @@ class MouseEvent(Event):
         elif value.type in [tdl.lib.SDL_MOUSEWHEEL]:
             value = value.wheel
             self.timestamp = datetime.datetime.utcnow()
-            horizontal_scroll = value.x if value.direction == tdl.lib.SDL_MOUSEWHEEL_NORMAL else -value.x
-            vertical_scroll = value.y if value.direction == tdl.lib.SDL_MOUSEWHEEL_NORMAL else -value.y
-            x_direction = int(horizontal_scroll / horizontal_scroll if horizontal_scroll else 0)
-            y_direction = int(vertical_scroll / vertical_scroll if vertical_scroll else 0)
+            horizontal_scroll = (
+                value.x
+                if value.direction == tdl.lib.SDL_MOUSEWHEEL_NORMAL
+                else -value.x
+            )
+            vertical_scroll = (
+                value.y
+                if value.direction == tdl.lib.SDL_MOUSEWHEEL_NORMAL
+                else -value.y
+            )
+            x_direction = int(
+                horizontal_scroll / horizontal_scroll if horizontal_scroll else 0
+            )
+            y_direction = int(
+                vertical_scroll / vertical_scroll if vertical_scroll else 0
+            )
             self.wheel_vector = Direction.get(Position(x_direction, y_direction))
             self.delta_pixel = Position(horizontal_scroll, vertical_scroll)
 
@@ -272,21 +296,34 @@ class MouseEvent(Event):
 
     def __hash__(self):
         buttons = (
-            1 << 0 if self.left_button_held else 0
-            + 1 << 1 if self.left_button_released else 0
-            + 1 << 2 if self.right_button_held else 0
-            + 1 << 3 if self.right_button_released else 0
-            + 1 << 4 if self.middle_button_held else 0
-            + 1 << 5 if self.middle_button_released else 0
-            + 1 << 6 if self.click_count == 1 else 0
-            + 1 << 7 if self.click_count == 2 else 0
+            1 << 0
+            if self.left_button_held
+            else 0 + 1 << 1
+            if self.left_button_released
+            else 0 + 1 << 2
+            if self.right_button_held
+            else 0 + 1 << 3
+            if self.right_button_released
+            else 0 + 1 << 4
+            if self.middle_button_held
+            else 0 + 1 << 5
+            if self.middle_button_released
+            else 0 + 1 << 6
+            if self.click_count == 1
+            else 0 + 1 << 7
+            if self.click_count == 2
+            else 0
         )
 
         hashable = (
-            self.pixel_position.x, self.pixel_position.y,
-            self.delta_pixel.x, self.delta_pixel.y,
-            self.coordinate_position.x, self.coordinate_position.y,
-            self.delta_coordinate.x, self.delta_coordinate.y,
+            self.pixel_position.x,
+            self.pixel_position.y,
+            self.delta_pixel.x,
+            self.delta_pixel.y,
+            self.coordinate_position.x,
+            self.coordinate_position.y,
+            self.delta_coordinate.x,
+            self.delta_coordinate.y,
             self.wheel_vector,
             buttons,
         )
@@ -296,9 +333,9 @@ class MouseEvent(Event):
         return hash(self) == hash(other)
 
     def __str__(self):
-        string = [f'[{self.timestamp}]', 'MOUSE']
-        if self.wheel_vector.name != 'NONE':
-            string.append('SCROLL')
+        string = [f"[{self.timestamp}]", "MOUSE"]
+        if self.wheel_vector.name != "NONE":
+            string.append("SCROLL")
 
         if self.pixel_position:
             string.append(str(self.pixel_position))
@@ -306,19 +343,19 @@ class MouseEvent(Event):
             string.append(str(self.delta_pixel))
 
         if self.left_button_held:
-            string.append('PRESSED LEFT')
+            string.append("PRESSED LEFT")
         if self.right_button_held:
-            string.append('PRESSED RIGHT')
+            string.append("PRESSED RIGHT")
         if self.middle_button_held:
-            string.append('PRESSED MIDDLE')
+            string.append("PRESSED MIDDLE")
 
         if self.left_button_released:
-            string.append('RELEASED LEFT')
+            string.append("RELEASED LEFT")
         if self.right_button_released:
-            string.append('RELEASED RIGHT')
+            string.append("RELEASED RIGHT")
         if self.middle_button_released:
-            string.append('RELEASED MIDDLE')
-        return ' '.join(string)
+            string.append("RELEASED MIDDLE")
+        return " ".join(string)
 
 
 class QuitEvent(Event):
@@ -342,7 +379,7 @@ def get_events(timeout: int = None, blocking: bool = True, **event_filters):
     elif blocking:
         tdl.lib.SDL_WaitEvent(tdl.ffi.NULL)
 
-    sdl_event = tdl.ffi.new('SDL_Event*')
+    sdl_event = tdl.ffi.new("SDL_Event*")
     while tdl.lib.SDL_PollEvent(sdl_event):
         if sdl_event.type in user_event_mapping:
             event = user_event_mapping[sdl_event.type]()
@@ -354,14 +391,14 @@ def get_events(timeout: int = None, blocking: bool = True, **event_filters):
 
 def _setup_filtering(**event_filters):
     default_filter = {
-        'keyboard': True,
-        'mouse_wheel': True,
-        'mouse_motion': True,
-        'mouse_button': True,
-        'pressed': True,
-        'released': True,
-        'quit': True
-        }
+        "keyboard": True,
+        "mouse_wheel": True,
+        "mouse_motion": True,
+        "mouse_button": True,
+        "pressed": True,
+        "released": True,
+        "quit": True,
+    }
     event_filters = event_filters or {}
 
     # Determine if the filters remove specific event types or include
@@ -409,5 +446,3 @@ def _setup_filtering(**event_filters):
         user_event_mapping[tdl.lib.SDL_QUIT] = QuitEvent
 
     return user_event_mapping
-
-

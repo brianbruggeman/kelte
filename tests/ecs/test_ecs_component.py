@@ -22,10 +22,10 @@ def test_ecs_component_Component(data):
     assert hasattr(e, data.component.name)
     assert getattr(e, data.component.name) == data.component.data
 
-    assert getattr(e, data.component.name).__get__(None, None) == c
     assert getattr(e, data.component.name).__get__(c, c) == c.data
 
-    assert getattr(e, data.component.name).__set__(c, 1) == c
+    getattr(e, data.component.name).__set__(c, 1)
+    assert getattr(e, data.component.name).__get__(c, c) == c.data
     with pytest.raises(AttributeError):
         assert getattr(e, data.component.name).__set__(None, None) == c
 

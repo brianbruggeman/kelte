@@ -1,6 +1,5 @@
 # Package command-line interface
-kelte = kelte.__main__:run
+kelte = kelte.cli.run:run
 
 # Pyinstaller building
 build = kelte.cli.build:build
-run = kelte.cli.run:run

@@ -1,3 +1,4 @@
+colr
 dataclasses; python_version == '3.6'
 freetype-py
 fuzzywuzzy
