@@ -24,7 +24,7 @@ __all__ = (
 # ----------------------------------------------------------------------
 __name__ = "kelte"
 __description__ = "7wrl(2018): /r/RoguelikeDev does Roguelike in 2018"
-__ver__ = "1.0.1"  # Must follow pep440
+__ver__ = "1.2.0"  # Must follow pep440
 
 __author__ = "Brian Bruggeman"
 __author_email__ = "brian.m.bruggeman@gmail.com"
@@ -64,7 +64,7 @@ def _run(cmd):
 # Programmatic values
 _sha = _run("git rev-parse --short HEAD")
 if _sha:
-    _sep = "-git.sha."
+    _sep = "-b"
     __ver__ = f"{__ver__}{_sep}{_sha}"
 
 __version__ = pkg_resources.parse_version(__ver__).public

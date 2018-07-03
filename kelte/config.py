@@ -17,9 +17,11 @@ class Settings:
     repo_path: Path = Path(__file__).parent.parent
     assets_path: Path = repo_path / "assets"
 
+    version = package_metadata['version']
+
     width: int = 80
     height: int = 50
-    title: str = "Kelte"
+    title: str = f'Kelte  (v{version})'
     full_screen: bool = False
     font_path: bool = str(assets_path / "terminal8x8.png")
     main_console: int = 0
