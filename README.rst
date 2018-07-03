@@ -8,6 +8,7 @@ Motivation
 ----------
 /r/RoguelikeDev does a Roguelike in 7 weeks: 2018
 
+|ImageLink|_
 
 Installation
 ------------
@@ -36,6 +37,9 @@ Releases
 
 
 .. Links:
+
+.. |ImageLink| image:: https://i.imgur.com/EYJFgdI.png
+.. _ImageLink: https://old.reddit.com/r/roguelikedev/wiki/python_tutorial_series#wiki_version_2018
 
 .. _week_1_reddit: https://reddit.com/r/roguelikedev/comments/8s5x5n/roguelikedev_does_the_complete_roguelike_tutorial/
 .. _week_1_mac_bin: https://github.com/brianbruggeman/kelte/releases/download/week01/MacOS-1.1.0.zip
