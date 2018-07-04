@@ -5,11 +5,11 @@ import sys
 from ..config import settings
 from ..vendored import click
 
-
 # Notes:
 #   Pyinstaller seems to build a bad binary on Windows when:
 #     - using upx
 #     - using windowed mode
+
 
 @click.command()
 @click.option(
@@ -19,9 +19,16 @@ from ..vendored import click
     default=True if sys.platform != "win32" else False,
     help="Create a debug build",
 )
-@click.option("-C/-w", "--console/--window", 'console', is_flag=True, default=False, help="Toggle window/console build")
+@click.option(
+    "-c/-w",
+    "--console/--window",
+    "console",
+    is_flag=True,
+    default=False,
+    help="Toggle window/console build",
+)
 @click.option("-d", "--debug", is_flag=True, help="Create a debug build")
-@click.option("-c", "--clean", is_flag=True, help="Use pyinstaller clean")
+@click.option("-C", "--clean", is_flag=True, help="Use pyinstaller clean")
 @click.option("-v", "--verbose", count=True, help="Increase output")
 def build(console, clean, verbose, debug, upx):
     package_name = settings.name
@@ -36,10 +43,10 @@ def build(console, clean, verbose, debug, upx):
     levels = ["ERROR", "WARNING", "INFO", "DEBUG"]
     log_level = levels[min(verbose, len(levels) - 1)]
     sys_id = sys_id_mapping.get(sys.platform, "linux")
-    script_path = settings.repo_path / "run.py"
+    script_path = settings.package_path / "run.py"
     # script_path = settings.repo_path / 'kelte' / 'cli' / 'run.py'
-    hooks_path = settings.repo_path / "scripts" / "pyinstaller" / "hooks"
-    build_path = settings.repo_path / "build" / sys_id
+    hooks_path = settings.package_path / "scripts" / "pyinstaller" / "hooks"
+    build_path = settings.package_path / "build" / sys_id
     sep = ";" if sys_id == "win" else ":"
     command = " ".join(
         [

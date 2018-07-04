@@ -1,5 +1,19 @@
 - name: pudding
+  lit_color: darker_orange
+  opaque: True
+
 - name: cube
+  lit_color: azure
+  opaque: True
+
 - name: ooze
+  lit_color: red
+  opaque: True
+
 - name: slime
+  lit_color: green
+  opaque: True
+
 - name: jelly
+  lit_color: celadon
+  opaque: True

@@ -17,7 +17,7 @@ from ._compat import (
     string_types,
     strip_ansi,
     text_streams,
-    text_type,
+    text_type
 )
 from .globals import resolve_color_default
 

@@ -20,20 +20,16 @@ class Point(typing.NamedTuple):
             "expected": 8.0,
         },
         {  # 3d
-            "points": [Point(0, 1, 2), Point(3, 4, 5)],
+            "points": [Point(3, 0, 0), Point(0, 4, 0)],
             "strict": False,
-            "expected": 5.196152422706632,
+            "expected": 5.0,
         },
-        {  # 2d
-            "points": [Point(0, 1), Point(2, 3)],
-            "strict": False,
-            "expected": 2.8284271247461903,
-        },
+        {"points": [Point(0, 3), Point(0, 4)], "strict": False, "expected": 1.0},  # 2d
         {"points": [Point(0), Point(2)], "strict": False, "expected": 2.0},  # 1d
         {  # Origin
-            "points": [Point(), Point(2, 2, 2)],
+            "points": [Point(), Point(0, 1, 0)],
             "strict": False,
-            "expected": 3.4641016151377544,
+            "expected": 1.0,
         },
     ],
 )

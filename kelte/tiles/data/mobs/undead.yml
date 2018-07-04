@@ -3,12 +3,13 @@
 - name: ghost
 - name: Lich
 - name: mummy
+- name: phantom
 - name: revenant
 - name: shadow
 - name: skeleton
 - name: specters
 - name: skull
-- name: vampire
+- name: Vampire
 - name: wight
 - name: wraith
 - name: zombie

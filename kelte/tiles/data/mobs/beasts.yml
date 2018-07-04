@@ -1,14 +1,55 @@
 - name: ant
+  lit_color: dark_red
+  opaque: True
+
 - name: ape
+  lit_color: sepia
+  opaque: True
+
 - name: bat
+  lit_color: darker_orange
+  opaque: True
+
 - name: badger
+  lit_color: sepia
+  opaque: True
+
 - name: bear
+  lit_color: dark_orange
+  opaque: True
+
 - name: boar
+  lit_color: pink
+  opaque: True
+
 - name: frog
+  lit_color: desaturated_green
+  opaque: True
+
 - name: goat
+  lit_color: desaturated_cyan
+  opaque: True
+
 - name: owl
+  lit_color: darkest_yellow
+  opaque: True
+
 - name: salamander
+  lit_color: desaturated_red
+  opaque: True
+
 - name: snake
+  lit_color: lighter_green
+  opaque: True
+
 - name: spider
+  lit_color: lighter_yellow
+  opaque: True
+
 - name: vulture
+  lit_color: copper
+  opaque: True
+
 - name: wolf
+  lit_color: lighter_han
+  opaque: True

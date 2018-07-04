@@ -2,8 +2,9 @@ import typing
 from dataclasses import dataclass, field
 
 from ..maths import Position
-from ..tiles import get_tile
+from ..tiles import get_tile, Tile
 from .cooridors import Cooridor
+from .mobs import Mob
 from .rooms import Room
 
 
@@ -14,11 +15,22 @@ class LevelSize:
 
 
 @dataclass()
+class TileStack:
+    tiles: typing.List[Tile] = field(default_factory=list)
+
+    @property
+    def tile(self):
+        if len(self.tiles):
+            return self.tiles[-1]
+
+
+@dataclass()
 class Level:
     width: int = 0
     height: int = 0
     rooms: typing.List[Room] = field(default_factory=list)
     cooridors: typing.List[Cooridor] = field(default_factory=list)
+    mobs: typing.List[Mob] = field(default_factory=list)
 
     @property
     def grid(self):
@@ -26,11 +38,27 @@ class Level:
             self._populate()
         return self._grid
 
+    @property
+    def edges(self):
+        if not hasattr(self, '_edges'):
+            edges = []
+            for x in range(0, self.width):
+                edges.append(Position(x, 0))
+                edges.append(Position(x, self.height))
+            for y in range(0, self.height):
+                edges.append(Position(0, y))
+                edges.append(Position(self.height, y))
+            self._edges = edges
+        yield from self._edges
+
     def __getitem__(self, key):
-        return self.grid[key.y][key.x]
+        x, y = tuple(key)
+        value = self.grid[y][x]
+        return value
 
     def __setitem__(self, key, value):
-        self.grid[key.y][key.x] = value
+        x, y = key
+        self.grid[y][x] = value
 
     def __contains__(self, other):
         contained = False
@@ -66,6 +94,17 @@ class Level:
             for position, tile in cooridor:
                 data[position.y][position.x] = tile
 
+        # blit dungeon artifacts onto level
+
+        # blit entities onto levels
+        open_locations = [
+            (x, y)
+            for x in range(self.width)
+            for y in range(self.height)
+            if data[y][x].transparent
+        ]
+
+
         self._grid = data
 
     def __iter__(self):
@@ -77,7 +116,5 @@ class Level:
         return f"{type(self).__name__}(width={self.width}, height={self.height}, room_count={len(self.rooms)})"
 
     def __str__(self):
-        if not hasattr(self, "_grid"):
-            self._populate()
-        string = "\n".join("".join(str(c) for c in r) for r in self._grid)
+        string = "\n".join("".join(tile.rendered for tile in row) for row in self.grid)
         return string

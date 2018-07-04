@@ -6,30 +6,26 @@ import pytest
     "data",
     [
         {  # Check the simple case
-            "entity": {"name": "player"},
-            "component": {"name": "health", "data": 100},
-            "component_update": {"name": "mana", "data": 10},
+            "entity": {"name": "user"},
+            "component": {"name": "name", "data": "John"},
+            "component_update": {"name": "dob", "data": 20180101},
         }
     ],
 )
-def test_ecs_component_Component(data):
+def test_ecs_component(data):
     from kelte.ecs import Component, Entity
 
     data = munch.munchify(data)
 
     e = Entity(name=data.entity.name)
-    c = Component(e, name=data.component.name, data=data.component.data)
-    assert hasattr(e, data.component.name)
-    assert getattr(e, data.component.name) == data.component.data
+    c = Component(data=data.component.data)
+    setattr(e, data.component.name, c)
+    assert getattr(e, data.component.name) == c.data
+    # assert c.entity == e
 
-    assert getattr(e, data.component.name).__get__(c, c) == c.data
+    c2 = Component(data=data.component_update.data)
+    setattr(e, data.component_update.name, c2)
+    assert getattr(e, data.component_update.name) == c2.data
+    assert c2.entity == c.entity
 
-    getattr(e, data.component.name).__set__(c, 1)
-    assert getattr(e, data.component.name).__get__(c, c) == c.data
-    with pytest.raises(AttributeError):
-        assert getattr(e, data.component.name).__set__(None, None) == c
-
-    c.name = data.component_update.name
-    c.data = data.component_update.data
-
-    assert getattr(e, data.component_update.name) == data.component_update.data
+    assert c2.name is None

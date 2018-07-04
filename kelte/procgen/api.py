@@ -4,7 +4,12 @@ import typing
 from ..maths import Position
 from .cooridors import Cooridor
 from .levels import Level, LevelSize
+from .mobs import Mob
 from .rooms import BoundingBox, Room, RoomSize
+
+
+def create_mob(level, depth=None, biome=None):
+    return Mob()
 
 
 def create_level(
@@ -46,6 +51,9 @@ def create_level(
         cooridor = Cooridor(start, end)
         level.cooridors.append(cooridor)
 
+    for index, room in enumerate(level.rooms):
+        room.lit = random.randint(1, 10) > 8  # 20%
+
     return level
 
 
@@ -62,6 +70,7 @@ def create_dungeon(level_count=None, level_size=None):
     level_size = level_size or LevelSize(random.randint(50, 80), random.randint(50, 80))
 
     levels = []
+    print("Building dungeon...")
     for level_index in range(level_count):
         if level_index == 0:
             levels.append(create_level(size=level_size))

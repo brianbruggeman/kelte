@@ -1,4 +1,5 @@
 import random
+
 import numpy as np
 
 
@@ -57,5 +58,3 @@ def gradient(h, x, y):
     vectors = np.array([[0, 1], [0, -1], [1, 0], [-1, 0]])
     g = vectors[h % 4]
     return g[:, :, 0] * x + g[:, :, 1] * y
-
-

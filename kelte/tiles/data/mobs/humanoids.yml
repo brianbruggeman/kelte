@@ -1,19 +1,52 @@
 - name: Acolyte
+  lit_color: gold
+  opaque: True
+
 - name: Archmage
+  lit_color: cyan
+  opaque: True
+
 - name: Assassin
+  lit_color: dark_red
+  opaque: True
+
 - name: Bandit
+  lit_color: dark_azure
+  opaque: True
+
 - name: Berserker
+  lit_color: crimson
+  opaque: True
+
 - name: Bugbear
+  lit_color: dark_sea
+  opaque: True
+
 - name: Commoner
 - name: Cultist
 - name: Druid
 - name: Gnome
 - name: Gnoll
 - name: Goblin
+  lit_color: darker_green
+  opaque: True
+
 - name: Hobgoblin
+  lit_color: darker_amber
+  opaque: True
+
 - name: Kobold
+  lit_color: darker_red
+  opaque: True
+
 - name: Mage
+  lit_color: cyan
+  opaque: True
+
 - name: Necromancer
+  lit_color: dark_purple
+  opaque: True
+
 - name: Noble
 - name: Orc
 - name: Priest

@@ -2,7 +2,7 @@ import numpy as np
 import scipy.spatial.distance as spsd
 
 
-def euclidean_distance(*points, strict=None):
+def euclidean_distance(point01, point02, strict=None):
     """Calculates the euclidean distance between tuples
 
     Args:
@@ -12,5 +12,7 @@ def euclidean_distance(*points, strict=None):
     Returns:
         float: distance value
     """
-    points = np.array(points)
-    return spsd.euclidean(*points)
+    point01 = np.array(point01)
+    point02 = np.array(point02)
+    value = spsd.euclidean(point01, point02)
+    return value

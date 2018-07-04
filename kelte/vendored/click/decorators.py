@@ -4,7 +4,6 @@ from functools import update_wrapper
 
 from ._compat import iteritems
 from ._unicodefun import _check_for_unicode_literals
-
 # Circular dependencies between core and decorators
 from .core import Argument, Command, Group, Option
 from .globals import get_current_context

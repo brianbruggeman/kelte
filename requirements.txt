@@ -1,5 +1,6 @@
 colr
 dataclasses; python_version == '3.6'
+fonttools
 freetype-py
 fuzzywuzzy
 munch

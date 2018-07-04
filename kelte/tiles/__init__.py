@@ -2,13 +2,11 @@ from pathlib import Path
 
 import yaml
 
-from .api import Tile, get_color
-
+from .api import Tile, get_color, get_tile
 
 data_folder = Path(__file__).parent / "data"
 
 for data_file in data_folder.glob("**/*.yml"):
-    print(f"Loading data from: {data_file.name}")
     with data_file.open() as stream:
         items = yaml.load(stream.read())
         if not items:
@@ -26,7 +24,7 @@ for data_file in data_folder.glob("**/*.yml"):
             # ----------------------------------------------------------
             # simple
             # ----------------------------------------------------------
-            code = item.pop('code', None)
+            code = item.pop("code", None)
             if code:
                 character = chr(code)
                 item["character"] = character

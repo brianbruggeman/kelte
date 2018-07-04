@@ -1,6 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import colr
+import tcod as tdl
 
 from ..colors import Color, get_color
 
@@ -8,43 +9,37 @@ from ..colors import Color, get_color
 class Registry(type):
     def __new__(cls, class_name, bases, namespace):
         namespace["registry"] = {}
-        return type(class_name, bases, namespace)
-
-
-class Colored:
-    @property
-    def lit_color(self):
-        if not hasattr(self, "_lit_color"):
-            color = get_color("grey")
-            setattr(self, "_lit_color", color)
-        return getattr(self, "_lit_color")
-
-    @lit_color.setter
-    def lit_color(self, value):
-        if isinstance(value, str):
-            color = get_color(value)
-            setattr(self, "_lit_color", color)
-        elif isinstance(value, Color):
-            setattr(self, "_lit_color", value)
+        new_cls = type(class_name, bases, namespace)
+        return new_cls
 
 
 @dataclass()
-class Tile(Colored, metaclass=Registry):
+class Tile(metaclass=Registry):
     name: str = "empty"
     character: str = " "
-    lit = False
-    visible = False
-    walkable = False
-    destructable = False
+    lit: bool = False
+    visible: bool = False
+    walkable: bool = False
+    destructable: bool = False
     flyable: bool = False
     opaque: bool = False
     explored: bool = False
-    lit_color: Color = get_color("grey")
-    unlit_color: Color = get_color("dark_grey")
+    lit_color: Color = field(default=get_color("grey"))
+    unlit_color: Color = field(default=get_color("darker_grey"))
+    background_lit_color: Color = field(default=get_color("black"))
+    background_unlit_color: Color = field(default=get_color("black"))
+    background_mode: int = tdl.BKGND_NONE
+
+    @property
+    def background_color(self):
+        if self.lit and self.visible:
+            return self.background_lit_color
+        else:
+            return self.background_unlit_color
 
     @property
     def color(self):
-        if self.lit:
+        if self.lit and self.visible:
             return self.lit_color
         else:
             return self.unlit_color
@@ -56,12 +51,13 @@ class Tile(Colored, metaclass=Registry):
     @property
     def rendered(self):
         foreground = self.color.hex
-        string = colr.color(self.character, fore=foreground)
+        background = self.background_color.hex
+        string = colr.color(self.c, fore=foreground, back=background)
         return string
 
     @property
     def c(self):
-        if self.explored:
+        if self.explored or self.visible:
             return self.character
         else:
             return " "
@@ -70,8 +66,6 @@ class Tile(Colored, metaclass=Registry):
         copy_of_self = Tile(
             name=self.name,
             character=self.character,
-            lit_color=self.lit_color,
-            unlit_color=self.unlit_color,
             lit=self.lit,
             visible=self.visible,
             walkable=self.walkable,
@@ -80,14 +74,17 @@ class Tile(Colored, metaclass=Registry):
             opaque=self.opaque,
             explored=self.explored,
         )
+        copy_of_self.lit_color = self.lit_color
+        copy_of_self.unlit_color = self.unlit_color
         return copy_of_self
 
-    def __new__(cls, name: str = "empty", *args, **kwds):
+    def __new__(cls, *args, **kwds):
+        name = kwds.get("name")
         parent = super()
         if not isinstance(parent, Tile):
-            instance = parent.__new__(cls)
+            instance = super().__new__(cls)
         else:
-            instance = parent.__new__(cls, name, *args, **kwds)
+            instance = super().__new__(cls, *args, **kwds)
         cls.registry.setdefault(name, instance)
         return instance
 
@@ -97,74 +94,3 @@ class Tile(Colored, metaclass=Registry):
 
 def get_tile(name):
     return Tile.registry.get(name, Tile()).copy()
-
-
-#
-# tiles = Tile.registry
-# {
-#     "player": Tile(
-#         "player",
-#         "@",
-#         lit_color=get_color("yellow"),
-#         unlit_color=get_color("dark_yellow"),
-#         explored=True,
-#         opaque=True,
-#     ),
-#     "empty": Tile(),
-#     "floor": Tile(
-#         "floor",
-#         ".",
-#         lit_color=get_color("sepia"),
-#         unlit_color=get_color("darker_sepia"),
-#         walkable=True,
-#     ),
-#     "wall": Tile(
-#         "wall",
-#         "#",
-#         lit_color=get_color("sepia"),
-#         unlit_color=get_color("darker_sepia"),
-#         opaque=True,
-#     ),
-#     "open-door": Tile(
-#         "open-door",
-#         "-",
-#         lit_color=get_color("lighter_sepia"),
-#         unlit_color=get_color("sepia"),
-#         walkable=True,
-#     ),
-#     "closed-door": Tile(
-#         "closed-door",
-#         "+",
-#         lit_color=get_color("lighter_sepia"),
-#         unlit_color=get_color("sepia"),
-#         opaque=True,
-#     ),
-#     # traditional mob tiles
-#     "ant": MobTile("ant", "a"),
-#     "bat": MobTile("bat", "b"),
-#     "bog monster": MobTile("bog monster", "b"),
-#     "gelatinous cube": MobTile("gelatinous cube", "c"),
-#     "goblin": MobTile("goblin", "g"),
-#     "imp": MobTile("imp", "i"),
-#     "jackel": MobTile("jackel", "j"),
-#     "hobgoblin": MobTile("hobgoblin", "H"),
-#     "kobold": MobTile("kobold", "k"),
-#     "orc": MobTile("orc", "o"),
-#     "rats": MobTile('rats', 's'),
-#     "skeleton": MobTile('skeleton', 's'),
-#     "slime": MobTile('slime', 's'),
-#     "snake": MobTile('snake', 's'),
-#     "spider": MobTile('spider', 's'),
-#     "troll": MobTile('troll', 't'),
-#     "wolf": MobTile("wolf", "w"),
-#     "worm": MobTile('worm', 'w'),
-#     # celtic mythological creatures
-#     "banshee": MobTile('banshee', 'b'),
-#     'badb': MobTile('badb', 'B'),
-#     'bean nighe': MobTile('bean nighe', 'b'),
-#     "changeling": MobTile('changeling', 'c'),
-#     "Morrigan": MobTile('morrigan', 'M'),
-#     "macha": MobTile('macha', 'M'),
-#     "selkie": MobTile('selkie', 's'),
-#
-# }

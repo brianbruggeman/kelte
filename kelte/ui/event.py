@@ -1,12 +1,12 @@
 import datetime
 import enum
 import unicodedata
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import tcod as tdl
 from munch import munchify
 
-from ..maths import Direction, Position
+from ..maths import Direction, Position, vector
 from .modifier import KeyboardModifiers
 
 SDL_PRESSED = 1
@@ -170,11 +170,11 @@ class KeyboardEvent(Event):
 
 @dataclass()
 class MouseEvent(Event):
-    pixel_position: Position = Position(0, 0)
-    delta_pixel: Position = Position(0, 0)
-    coordinate_position: Position = Position(0, 0)
-    delta_coordinate: Position = Position(0, 0)
-    wheel_vector: Direction = Direction.NONE
+    pixel_position: Position = field(default=Position(0, 0))
+    delta_pixel: Position = field(default=Position(0, 0))
+    coordinate_position: Position = field(default=Position(0, 0))
+    delta_coordinate: Position = field(default=Position(0, 0))
+    wheel_vector: Direction = field(default=vector.NONE)
     click_count: int = 0
 
     left_button_held: bool = False
@@ -185,7 +185,7 @@ class MouseEvent(Event):
     right_button_released: bool = False
     middle_button_released: bool = False
 
-    timestamp: datetime.datetime = datetime.datetime.utcnow()
+    timestamp: datetime.datetime = field(default_factory=datetime.datetime.utcnow)
 
     @property
     def tdl_mouse(self):
@@ -205,8 +205,8 @@ class MouseEvent(Event):
             self.left_button_released,
             self.right_button_released,
             self.middle_button_released,
-            True if self.wheel_vector == Direction.UP else False,
-            True if self.wheel_vector == Direction.DOWN else False,
+            True if self.wheel_vector == vector.UP else False,
+            True if self.wheel_vector == vector.DOWN else False,
         )
         return key
 
@@ -230,9 +230,9 @@ class MouseEvent(Event):
             self.middle_button_released = value.mbutton_pressed
 
             if value.wheel_up:
-                self.wheel_vector = Direction.UP
+                self.wheel_vector = vector.UP
             elif value.wheel_down:
-                self.wheel_vector = Direction.DOWN
+                self.wheel_vector = vector.DOWN
 
             self.timestamp = datetime.datetime.utcnow()
 
@@ -285,8 +285,8 @@ class MouseEvent(Event):
             y_direction = int(
                 vertical_scroll / vertical_scroll if vertical_scroll else 0
             )
-            self.wheel_vector = Direction.get(Position(x_direction, y_direction))
-            self.delta_pixel = Position(horizontal_scroll, vertical_scroll)
+            self.wheel_vector = Direction(x_direction, y_direction)
+            self.delta_pixel = Direction(horizontal_scroll, vertical_scroll)
 
         elif value.type in [tdl.lib.SDL_MOUSEMOTION]:
             value = value.motion

@@ -1,59 +1,32 @@
-from dataclasses import dataclass
-from enum import Enum
+from dataclasses import dataclass, field
 
-from .point import Position
-
-
-class Direction(Enum):
-    NONE: Position = Position(0, 0)
-
-    # Cardinal directions
-    NORTH: Position = Position(0, -1)
-    SOUTH: Position = Position(0, 1)
-    EAST: Position = Position(1, 0)
-    WEST: Position = Position(-1, 0)
-
-    NORTH_EAST: Position = NORTH + EAST
-    NORTH_WEST: Position = NORTH + WEST
-    SOUTH_EAST: Position = SOUTH + EAST
-    SOUTH_WEST: Position = SOUTH + WEST
-
-    UP: Position = Position(0, -1)
-    DOWN: Position = Position(0, 1)
-    RIGHT: Position = Position(1, 0)
-    LEFT: Position = Position(-1, 0)
-
-    UP_RIGHT = UP + RIGHT
-    UP_LEFT = UP + LEFT
-    DOWN_RIGHT = DOWN + RIGHT
-    DOWN_LEFT = DOWN + LEFT
-
-    @classmethod
-    def get(cls, other):
-        for name, value in cls.__members__.items():
-            if value == other:
-                return getattr(cls, name)
-
-    def __get__(self, obj, type=None):
-        return self.value
-
-    def __set__(self, obj, value):
-        self.value = value
-
-    def __len__(self):
-        return len(self.value)
-
-    def __getitem__(self, item):
-        return self.value[item]
-
-    def __iter__(self):
-        yield from self.value
-
-    def __str__(self):
-        return self.name
+from .point import Point
 
 
-@dataclass
-class Vector:
-    direction: Direction = Direction.NORTH
-    magnitude: int = 0
+@dataclass()
+class Direction(Point):
+    x: int = 0
+    y: int = 0
+
+
+NONE: Direction = Direction(0, 0)
+
+NORTH: Direction = Direction(0, -1)
+SOUTH: Direction = Direction(0, 1)
+EAST: Direction = Direction(1, 0)
+WEST: Direction = Direction(-1, 0)
+
+NORTH_EAST: Direction = NORTH + EAST
+NORTH_WEST: Direction = NORTH + WEST
+SOUTH_EAST: Direction = SOUTH + EAST
+SOUTH_WEST: Direction = SOUTH + WEST
+
+UP: Direction = Direction(0, -1)
+DOWN: Direction = Direction(0, 1)
+RIGHT: Direction = Direction(1, 0)
+LEFT: Direction = Direction(-1, 0)
+
+UP_RIGHT: Direction = UP + RIGHT
+UP_LEFT: Direction = UP + LEFT
+DOWN_RIGHT: Direction = DOWN + RIGHT
+DOWN_LEFT: Direction = DOWN + LEFT

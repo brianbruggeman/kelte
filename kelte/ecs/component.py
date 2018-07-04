@@ -1,6 +1,9 @@
+import typing
 import uuid
+from dataclasses import dataclass, field
 
-from .registry import EcsRegistry
+from .entity import Entity
+from .mixins import EcsIdentifierMixin
 
 # Components
 #   Only store data
@@ -13,54 +16,73 @@ from .registry import EcsRegistry
 #   Provides methods for querying entries
 
 
-class Component(metaclass=EcsRegistry):
-    @property
-    def name(self):
-        return getattr(self, "_name", None)
-
-    @name.setter
-    def name(self, value):
-        old_name = getattr(self, "_name", None)
-        if old_name:
-            delattr(self.entity, old_name)
-        setattr(self, "_name", value)
-        setattr(self.entity, value, self)
+@dataclass
+class Component:
+    data: typing.Any = None
+    name: str = None
+    entity: Entity = None
+    id: uuid.UUID = field(default_factory=uuid.uuid4)
 
     def __add__(self, other):
-        data = self.data + other
-        return data
+        return self.data + other
+
+    def __delete__(self, instance):
+        my_index = instance.__dict__.setdefault("components", []).index(self)
+        instance.__dict__["components"].pop(my_index)
+        if not instance.__dict__["components"]:
+            instance.__dict__.pop("components")
+        instance.__dict__.pop(self.name)
 
     def __eq__(self, other):
-        if isinstance(other, Component):
-            return self.data == other.data
-        else:
-            return self.data == other
+        return self.data == other
+
+    def __floordiv__(self, other):
+        return self.data // other
 
     def __get__(self, instance, owner):
-        return instance.__dict__["data"]
+        instance.__dict__.setdefault(self.name, self.data)
+        return instance.__dict__[self.name]
 
-    def __getattr__(self, key):
-        data = object.__getattribute__(self, "data")
-        if hasattr(data, key):
-            return getattr(data, key)
-        else:
-            raise AttributeError(f"Attribute, {key}, not found")
+    def __getattr__(self, item):
+        # all components have `data`...check data
+        if hasattr(self.data, item):
+            return getattr(self.data, item)
+        raise AttributeError(f"`Component` object has no attribute `{item}`")
 
-    def __init__(self, entity, name=None, data=None, id=None):
-        self.entity = entity
-        self.name = name
-        self.data = data
-        self.id = id or uuid.uuid4().hex
+    def __iter__(self):
+        yield from self.data
 
-    def __repr__(self):
-        return f"{type(self).__name__}(entity={self.entity.name or self.entity.id}, name={self.name}, data={self.data}, id={self.id})"
+    def __lt__(self, other):
+        return self.data < other
+
+    def __mul__(self, other):
+        return self.data * other
 
     def __set__(self, instance, value):
-        instance.__dict__["data"] = value
+        instance.__dict__[self.name] = value
+        instance.__dict__.setdefault("components", []).append(self)
+        self.data = value
+        self.entity = instance
 
-    def __set_name__(self, instance, name):
+    def __set_name__(self, owner, name):
         self.name = name
-        instance.__dict__[name] = self
+
+    def __setattr__(self, item, value):
+        try:
+            super().__setattr__(item, value)
+        except AttributeError:
+            for key in self.__annotations__.keys():
+                attr = getattr(self, key)
+                if hasattr(attr, item):
+                    setattr(attr, item, value)
+                    return
+            raise AttributeError(f"`Component` object has no attribute `{item}`")
+
+    def __sub__(self, other):
+        return self.data - other
 
     def __str__(self):
         return str(self.data)
+
+    def __truediv__(self, other):
+        return self.data / other

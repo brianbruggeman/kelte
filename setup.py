@@ -15,7 +15,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from setuptools import Command, setup
+from setuptools import Command, Extension, setup
 
 try:
     # pip10+
@@ -24,11 +24,16 @@ except ImportError:
     # pip9
     import pip.req as req
 
-
 try:
     import pypandoc
 except ImportError:
     pypandoc = None
+
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    cythonize = None
+
 
 if sys.version_info < (3, 6):
     sys.stderr.write("Python 3.6+ is required for installation.\n")
@@ -40,6 +45,9 @@ if sys.version_info < (3, 6):
 def main():
     """Run setup"""
     metadata = get_package_metadata()
+    if cythonize:
+        cython_files = [Extension("*", ["**/*.pyx"])]
+        metadata['ext_modules'] = cythonize(cython_files)
 
     # Run setup
     setup(**metadata)
