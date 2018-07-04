@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import tcod as tdl
 from munch import munchify
 
-from ..math import Direction, Position
+from ..maths import Direction, Position
 from .modifier import KeyboardModifiers
 
 SDL_PRESSED = 1

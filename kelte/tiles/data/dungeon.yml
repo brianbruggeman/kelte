@@ -1,0 +1,55 @@
+- name: wall
+  character: '#'
+  unlit_color: darker_sepia
+  lit_color: dark_sepia
+  opaque: True
+
+- name: floor
+  character: '.'
+  unlit_color: darker_sepia
+  lit_color: dark_sepia
+
+- name: broken door
+  character: "'"
+  unlit_color: dark_sepia
+  lit_color: sepia
+
+- name: closed door
+  character: '+'
+  unlit_color: dark_sepia
+  lit_color: sepia
+
+- name: hidden door
+  character: '#'
+  unlit_color: darker_sepia
+  lit_color: dark_sepia
+
+- name: open door
+  character: '-'
+  unlit_color: dark_sepia
+  lit_color: sepia
+
+- name: hidden trap
+  character: '.'
+  unlit_color: darker_sepia
+  lit_color: dark_sepia
+
+- name: trap
+  character: '^'
+  unlit_color: darker_sepia
+  lit_color: dark_sepia
+
+- name: stairs up
+  character: '<'
+  lit_color: light_grey
+  unlit_color: grey
+
+- name: stairs down
+  character: '>'
+  lit_color: light_grey
+  unlit_color: grey
+
+- name: fountain
+  code: 937  # omega
+  lit_color: light_grey
+  unlit_color: grey

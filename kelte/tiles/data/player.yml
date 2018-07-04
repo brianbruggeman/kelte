@@ -1,0 +1,6 @@
+- name: player
+  character: "@"
+  lit_color: yellow
+  unlit_color: dark_yellow
+  explored: True
+  opaque: True

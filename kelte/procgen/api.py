@@ -1,7 +1,7 @@
 import random
 import typing
 
-from ..math import Position
+from ..maths import Position
 from .cooridors import Cooridor
 from .levels import Level, LevelSize
 from .rooms import BoundingBox, Room, RoomSize

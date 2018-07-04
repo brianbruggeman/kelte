@@ -1,6 +1,6 @@
 import random
 
-from ..math import Position
+from ..maths import Position
 from ..tiles import get_tile
 from .rooms import Room
 

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ..math import Position
+from ..maths import Position
 from ..tiles import get_tile
 
 
@@ -83,6 +83,9 @@ class Room:
 
     def copy(self):
         return Room(position=self.position, bounding_box=self.bounding_box)
+
+    def deform(self):
+
 
     def __iter__(self):
         for y, row in enumerate(self.grid):

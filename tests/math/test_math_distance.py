@@ -38,7 +38,7 @@ class Point(typing.NamedTuple):
     ],
 )
 def test_euclidean_distance(data):
-    from kelte.math.distance import euclidean_distance
+    from kelte.maths.distance import euclidean_distance
 
     data = munch.Munch(data)
 

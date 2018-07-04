@@ -12,6 +12,7 @@ import numpy as np
 from fontTools.ttLib import TTFont
 from fuzzywuzzy import fuzz
 from PIL import Image
+from cairocffi import ImageSurface
 
 package_path = Path(__file__).parent.parent
 darwin = sys.platform == "darwin"
@@ -20,6 +21,11 @@ windows = sys.platform.startswith("win")
 
 
 FREETYPE_SCALAR = 64
+
+
+class Shape(typing.NamedTuple):
+    rows: int = 0
+    cols: int = 0
 
 
 class PixelSize(typing.NamedTuple):
@@ -38,7 +44,19 @@ class Glyph:
     name: str = ""
     slot: ft.Glyph = None
     pixel_size: PixelSize = None
-    bitmap: np.ndarray = None
+    bitmap = None
+
+    @property
+    def advance(self):
+        return self.slot.advance
+
+    @property
+    def bitmap_top(self):
+        return self.bitmap.bitmap_top
+
+    @property
+    def rows(self):
+        return self.bitmap.rows
 
 
 @dataclass
@@ -56,12 +74,14 @@ class Typeface:
 
     @property
     def path(self):
-        if not hasattr(self, "_path"):
+        if not hasattr(self, '_path'):
             path = find_typeface(self.name)
-            if self.path is None:
-                raise RuntimeError(f"Could not find {self.name}")
-            self._path = path
-        return getattr(self, "_path")
+            if path is None:
+                raise RuntimeError(f'Could not find {self.name}')
+            elif not path.exists():
+                raise RuntimeError(f'Could not find {self.name}')
+            setattr(self, '_path', path)
+        return getattr(self, '_path')
 
     @property
     def face(self):
@@ -82,15 +102,17 @@ class Typeface:
     def available(self):
         """Memoizes looking through the typeface unicode availability
         """
-        path = Path(f"{self.path.stem}_typeface.dat")
+        path = Path(f"assets/{self.path.stem}_typeface.dat")
         if path.exists():
             with path.open() as stream:
                 data = json.loads(stream.read())
                 return data
+        else:
+            print(f'Memoized data was not found, building new file.')
 
     @available.setter
     def available(self, value):
-        path = Path(f"{self.name}_typeface.dat")
+        path = Path(f"assets/{self.path.stem}_typeface.dat")
         with path.open("w") as stream:
             stream.write(json.dumps(value))
 
@@ -99,7 +121,7 @@ class Typeface:
         typeface = TTFont(str(self.path))
         return typeface
 
-    def build(self, min_size=1, max_size=64, min_value=1, max_value=1024 * 64):
+    def build(self, min_size=None, max_size=None, min_unicode=None, max_unicode=None):
         """populates data field based on typeface
 
         Iterates over all possible unicode values up to
@@ -108,22 +130,34 @@ class Typeface:
         significantly faster for sparse fonts.
 
         """
+        if min_size is None and max_size is None:
+            min_size = max_size = 16
+        elif min_size is not None and max_size is None:
+            max_size = min_size
+        elif min_size is None and max_size is not None:
+            min_size = 1
+        min_unicode = min_unicode or 1
+        max_unicode = max_unicode or 1024 * 64 - 1
+
         available = self.available or []
         times = []
 
-        for size in range(min_size, max_size):
+        for size in range(min_size, max_size + 1):
+            # print(f'Building bitmaps for pixel size: {size} for {self.name}')
             start = time.time()
             pixel_size = PixelSize(size, size)
             self.data.setdefault(size, dict())
             available_ready = available != []
-            for unicode in available or range(min_value, max_value):
+            for unicode in available or range(min_unicode, max_unicode + 1):
                 if not available_ready and not self.unicode_in_typeface(unicode):
                     continue
                 char = chr(unicode)
+                # if not available_ready:
+                #     print(f'  {unicode} -> {char}')
                 self.face.set_char_size(pixel_size.width * FREETYPE_SCALAR)
                 self.face.load_char(char)
                 slot = self.face.glyph
-                bitmap = np.array(slot.bitmap)
+                bitmap = slot.bitmap
                 try:
                     name = unicodedata.name(char).lower()
                 except ValueError:
@@ -141,9 +175,16 @@ class Typeface:
     def render(self, size=16, unicode_values=None, filepath=None):
         filepath = filepath or f"{self.path.stem}_sprite_sheet.{size}.png"
         unicode_values = unicode_values or self.available
-        bitmaps = self.data[size]
+        glyphs = self.data[size]
+        shape = self._best_shape(count=len(unicode_values))
+        data = []
+        row = []
         for unicode in unicode_values:
-            bitmap = bitmaps.get(unicode)
+            if len(row) > shape.cols:
+                data.append(row)
+                row = []
+            glyph = glyphs.get(unicode)
+            row.append(glyph)
 
     def unicode_is_visible(self, unicode):
         if chr(unicode) in ["\r", "\n", "\t", " "]:
@@ -156,6 +197,21 @@ class Typeface:
                 if unicode in cmap.cmap:
                     return True
         return False
+
+    def _best_shape(self, count):
+        rows = count
+        cols = 1
+        while cols < rows:
+            rows = rows // 2
+            cols = cols * 2
+        remaining = count - rows * cols
+        if remaining:
+            rows += 1
+        shape = Shape(rows, cols)
+        return shape
+
+    def __getitem__(self, key):
+        return self.data[key]
 
 
 def build_typeface_spritesheet():
@@ -240,7 +296,7 @@ if __name__ == "__main__":
 
     def run(font_name):
         typeface = Typeface(font_name)
-        typeface.build(7, 16)
+        typeface.build(5, 25)
 
     font_name = "Deferral"
     if len(sys.argv) > 1:

@@ -1,7 +1,7 @@
 import typing
 from dataclasses import dataclass, field
 
-from ..math import Position
+from ..maths import Position
 from ..tiles import get_tile
 from .cooridors import Cooridor
 from .rooms import Room

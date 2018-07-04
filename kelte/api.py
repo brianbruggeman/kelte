@@ -4,7 +4,7 @@ import tcod as tdl
 
 from .config import settings
 from .ecs import Entity, Event
-from .math import Direction
+from .maths import Direction
 from .procgen import LevelSize, create_dungeon
 from .ui.event import KeyboardEvent, QuitEvent, get_events
 from .utils import terminal

@@ -6,6 +6,11 @@ from ..config import settings
 from ..vendored import click
 
 
+# Notes:
+#   Pyinstaller seems to build a bad binary on Windows when:
+#     - using upx
+#     - using windowed mode
+
 @click.command()
 @click.option(
     "-u",
@@ -14,14 +19,16 @@ from ..vendored import click
     default=True if sys.platform != "win32" else False,
     help="Create a debug build",
 )
+@click.option("-C/-w", "--console/--window", 'console', is_flag=True, default=False, help="Toggle window/console build")
 @click.option("-d", "--debug", is_flag=True, help="Create a debug build")
 @click.option("-c", "--clean", is_flag=True, help="Use pyinstaller clean")
 @click.option("-v", "--verbose", count=True, help="Increase output")
-def build(clean, verbose, debug, upx):
+def build(console, clean, verbose, debug, upx):
     package_name = settings.name
     sys_id_mapping = {"darwin": "mac", "win32": "win"}
     options = (
-        "-F -w -y"
+        "-F -y"
+        + (" -w" if not console else " -c")
         + (" -d" if debug else "")
         + (" --clean" if clean else "")
         + (" --noupx" if not upx else "")
