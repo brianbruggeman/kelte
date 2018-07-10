@@ -1,0 +1,12 @@
+- name: empty
+  character: ' '
+
+- name: wall
+  character: '#'
+  lit_color: sepia
+  opaque: True
+
+- name: floor
+  character: '·'
+  lit_color: sepia
+  walkable: True

@@ -7,7 +7,7 @@ from .ui.event import KeyboardEvent, QuitEvent, get_events
 from .utils import terminal
 from .fov import handle_view
 from .lighting import handle_lighting
-from .rendering import render_tile
+from .rendering import render_tile, render_entity
 from .initialization import initialize
 
 
@@ -30,12 +30,18 @@ def convert_event(ui_event):
             KeyboardEvent("u"): vector.UP_RIGHT,
             KeyboardEvent("b"): vector.DOWN_LEFT,
             KeyboardEvent("n"): vector.DOWN_RIGHT,
+            # No movement
+            KeyboardEvent("."): vector.NONE,
         }
 
         movement = vim_movement_mapper.get(ui_event)
         if movement:
             ecs_event = Event("MOVE", settings.player, movement)
             return ecs_event
+
+        if ui_event == KeyboardEvent('return', 13, meta=True):
+            tdl.console_set_fullscreen(not tdl.console_is_fullscreen())
+            return None
 
         if ui_event == KeyboardEvent("escape"):
             exit(0)
@@ -67,6 +73,9 @@ def cycle():
             render_tile(entity.position, old_tile)
             render_tile(new_pos, entity.tile)
             entity.position = new_pos
+
+    for entity in settings.entities:
+        render_entity(entity)
 
     tdl.console_flush()
     return done

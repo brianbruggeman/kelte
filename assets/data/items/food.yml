@@ -1,0 +1,19 @@
+- name: mushroom
+  character: ','
+  walkable: True
+
+- name: watermellon
+  character: ','
+  walkable: True
+
+- name: tomato
+  character: ','
+  walkable: True
+
+- name: cucumber
+  character: ','
+  walkable: True
+
+- name: peanut
+  character: ','
+  walkable: True

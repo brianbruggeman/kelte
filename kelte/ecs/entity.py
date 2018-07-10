@@ -1,10 +1,8 @@
 """
 Entity is the entry point for creating new ecs-based entities.
 """
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-from ..maths import Position
-from ..tiles import Tile
 from .mixins import ECSAutoRegisterMixin, EcsIdentifierMixin
 from .registry import Registrar
 
@@ -17,10 +15,11 @@ from .registry import Registrar
 
 @dataclass()
 class Entity(EcsIdentifierMixin, ECSAutoRegisterMixin, metaclass=Registrar):
-    type: str = "entity"
     name: str = ""
+    type: str = ''
 
     def add_component(self, name, data):
+        # Removes a circular dependency
         from .component import Component
 
         component = Component(data)
@@ -33,13 +32,18 @@ class Entity(EcsIdentifierMixin, ECSAutoRegisterMixin, metaclass=Registrar):
         delattr(self, name)
         return component
 
+    def copy(self):
+        # Removes a circular dependency
+        from .component import Component
+
+        new_entity = Entity(name=self.name, type=self.type)
+        for key, value in self.__dict__.items():
+            if isinstance(value, Component):
+                new_entity.add_component(key, value.copy())
+
+        return new_entity
+
     def __hash__(self):
         return hash(self.name)
 
 
-@dataclass()
-class PhysicalEntity(Entity):
-    type: str = "physical"
-
-    tile: Tile = field(default_factory=Tile)
-    position: Position = field(default_factory=Position)

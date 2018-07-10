@@ -55,26 +55,38 @@ Note:
 .. |ImageLink| image:: https://i.imgur.com/EYJFgdI.png
 .. _ImageLink: https://old.reddit.com/r/roguelikedev/wiki/python_tutorial_series#wiki_version_2018
 
+Releases
+^^^^^^^^
+
+* Week 1: [`Mac <week_1_mac_bin_>`_] [`Win <week_1_win_bin_>`_] [`Source zip <week_1_src_zip_>`_] [`Source gzip <week_1_src_gzip_>`_] [`Reddit <week_1_reddit_>`_]
+* Week 2: [`Mac <week_2_mac_bin_>`_] [`Win <week_2_win_bin_>`_] [`Source zip <week_2_src_zip_>`_] [`Source gzip <week_2_src_gzip_>`_] [`Reddit <week_2_reddit_>`_]
+* Week 3: [`Reddit <week_3_reddit_>`_]
+* Week 4: [`Reddit <week_4_reddit_>`_]
+* Week 5: [`Reddit <week_5_reddit_>`_]
+.. Week 6: [`Mac <week_6_mac_bin_>`_] [`Win <week_6_win_bin_>`_] [`Source zip <week_6_src_zip_>`_] [`Source gzip <week_6_src_gzip_>`_] [`Reddit <week_6_reddit_>`_]
+.. Week 7: [`Mac <week_7_mac_bin_>`_] [`Win <week_7_win_bin_>`_] [`Source zip <week_7_src_zip_>`_] [`Source gzip <week_7_src_gzip_>`_] [`Reddit <week_7_reddit_>`_]
+
+
 .. _vim_controls: http://www.roguebasin.com/index.php?title=Preferred_Key_Controls
 
-.. _week_1_reddit: https://reddit.com/r/roguelikedev/comments/8s5x5n/roguelikedev_does_the_complete_roguelike_tutorial/
+.. _week_1_reddit: https://reddit.com/r/roguelikedev/comments/8s5x5n/roguelikedev_does_the_complete_roguelike_tutorial/e10obtn/
 .. _week_1_mac_bin: https://github.com/brianbruggeman/kelte/releases/download/week01/MacOS-1.1.0.zip
 .. _week_1_win_bin: https://github.com/brianbruggeman/kelte/releases/download/week01/Windows-1.1.0.zip
 .. _week_1_src_zip: https://github.com/brianbruggeman/kelte/archive/week01.zip
 .. _week_1_src_gzip: https://github.com/brianbruggeman/kelte/archive/week01.tar.gz
 
-.. _week_2_reddit: https://reddit.com/r/roguelikedev/comments/8twiwa/roguelikedev_does_the_complete_roguelike_tutorial/
+.. _week_2_reddit: https://reddit.com/r/roguelikedev/comments/8twiwa/roguelikedev_does_the_complete_roguelike_tutorial/e1bpx9n/
 .. _week_2_mac_bin: https://github.com/brianbruggeman/kelte/releases/download/week02/MacOS-1.2.0.zip
 .. _week_2_win_bin: https://github.com/brianbruggeman/kelte/releases/download/week02/Windows-1.2.0.zip
 .. _week_2_src_zip: https://github.com/brianbruggeman/kelte/archive/week02.zip
 .. _week_2_src_gzip: https://github.com/brianbruggeman/kelte/archive/week02.tar.gz
 
-.. _week_3_reddit: https://reddit.com/r/roguelikedev/comments/8twiwa/roguelikedev_does_the_complete_roguelike_tutorial/
+.. _week_3_reddit: https://reddit.com/r/roguelikedev/comments/8vp3ya/roguelikedev_does_the_complete_roguelike_tutorial/e1pq0yv/
 .. _week_3_mac_bin: https://github.com/brianbruggeman/kelte/releases/download/week03/MacOS-1.3.0.zip
 .. _week_3_win_bin: https://github.com/brianbruggeman/kelte/releases/download/week03/Windows-1.3.0.zip
 .. _week_3_src_zip: https://github.com/brianbruggeman/kelte/archive/week03.zip
 
-.. _week_4_reddit: https://reddit.com/r/roguelikedev/comments/8twiwa/roguelikedev_does_the_complete_roguelike_tutorial/
+.. _week_4_reddit: https://reddit.com/r/roguelikedev/comments/8xlo9k/roguelikedev_does_the_complete_roguelike_tutorial/e24g8e2/
 .. _week_4_mac_bin: https://github.com/brianbruggeman/kelte/releases/download/week04/MacOS-1.4.0.zip
 .. _week_4_win_bin: https://github.com/brianbruggeman/kelte/releases/download/week04/Windows-1.4.0.zip
 .. _week_4_src_zip: https://github.com/brianbruggeman/kelte/archive/week04.zip

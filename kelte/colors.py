@@ -254,6 +254,10 @@ for color_name in dir(tdl):
         colors[color_name] = new_color
 
 colors['none'] = Color(0, 0, 0, 0)
+colors['brown'] = Color(139, 69, 19)
+colors['light_brown'] = Color(160, 82, 45)
+colors['lighter_brown'] = Color(205, 133, 63)
+colors['lightest_brown'] = Color(222, 184, 135)
 
 for color_name, color in colors.items():
     globals()[color_name] = color

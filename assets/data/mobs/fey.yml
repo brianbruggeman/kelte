@@ -1,0 +1,11 @@
+- name: dryad
+  lit_color: green
+
+- name: pixie
+  lit_color: brown
+
+- name: sprite
+  lit_color: pink
+
+- name: nymph
+  lit_color: cyan

@@ -15,99 +15,59 @@
 """
 
 # Core classes
-from .core import (
-    Context,
-    BaseCommand,
-    Command,
-    MultiCommand,
-    Group,
-    CommandCollection,
-    Parameter,
-    Option,
-    Argument,
-)
-
-# Globals
-from .globals import get_current_context
-
+from .core import Argument, BaseCommand, Command, CommandCollection, Context, Group, MultiCommand, Option, Parameter
 # Decorators
 from .decorators import (
+    argument,
+    command,
+    confirmation_option,
+    group,
+    help_option,
+    make_pass_decorator,
+    option,
     pass_context,
     pass_obj,
-    make_pass_decorator,
-    command,
-    group,
-    argument,
-    option,
-    confirmation_option,
     password_option,
-    version_option,
-    help_option,
+    version_option
 )
-
-# Types
-from .types import (
-    ParamType,
-    File,
-    Path,
-    Choice,
-    IntRange,
-    Tuple,
-    STRING,
-    INT,
-    FLOAT,
-    BOOL,
-    UUID,
-    UNPROCESSED,
-)
-
-# Utilities
-from .utils import (
-    echo,
-    get_binary_stream,
-    get_text_stream,
-    open_file,
-    format_filename,
-    get_app_dir,
-    get_os_args,
-)
-
-# Terminal functions
-from .termui import (
-    prompt,
-    confirm,
-    get_terminal_size,
-    echo_via_pager,
-    progressbar,
-    clear,
-    style,
-    unstyle,
-    secho,
-    edit,
-    launch,
-    getchar,
-    pause,
-)
-
 # Exceptions
 from .exceptions import (
-    ClickException,
-    UsageError,
-    BadParameter,
-    FileError,
     Abort,
-    NoSuchOption,
-    BadOptionUsage,
     BadArgumentUsage,
+    BadOptionUsage,
+    BadParameter,
+    ClickException,
+    FileError,
     MissingParameter,
+    NoSuchOption,
+    UsageError
 )
-
 # Formatting
 from .formatting import HelpFormatter, wrap_text
-
+# Globals
+from .globals import get_current_context
 # Parsing
 from .parser import OptionParser
-
+# Terminal functions
+from .termui import (
+    clear,
+    confirm,
+    echo_via_pager,
+    edit,
+    get_terminal_size,
+    getchar,
+    launch,
+    pause,
+    progressbar,
+    prompt,
+    secho,
+    style,
+    unstyle
+)
+# Types
+from .types import BOOL, FLOAT, INT, STRING, UNPROCESSED, UUID, Choice, File, IntRange, ParamType, Path, Tuple
+# Utilities
+from .utils import echo, format_filename, get_app_dir, get_binary_stream, get_os_args, get_text_stream, open_file
 
 __all__ = [
     # Core classes

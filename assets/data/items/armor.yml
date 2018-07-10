@@ -1,0 +1,32 @@
+- name: shield
+  character: ')'
+  walkable: True
+
+- name: chest armor
+  character: '['
+  walkable: True
+
+- name: leggings armor
+  character: ']'
+  walkable: True
+
+- name: back armor
+  character: '('
+  walkable: True
+
+- name: boots
+  character: ']'
+  walkable: True
+
+- name: arm armor
+  character: ']'
+  walkable: True
+
+- name: gloves
+  character: ']'
+  walkable: True
+
+- name: cloak
+  character: ']'
+  walkable: True
+

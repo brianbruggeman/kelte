@@ -24,7 +24,7 @@ __all__ = (
 # ----------------------------------------------------------------------
 __name__ = "kelte"
 __description__ = "7wrl(2018): /r/RoguelikeDev does Roguelike in 2018"
-__ver__ = "1.2.0"  # Must follow pep440
+__ver__ = "1.4.0"  # Must follow pep440
 
 __author__ = "Brian Bruggeman"
 __author_email__ = "brian.m.bruggeman@gmail.com"
@@ -46,6 +46,7 @@ __classifiers__ = [
     "Development Status :: 3 - Alpha",
     "Natural Language :: English",
     "Operating System :: POSIX",
+    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.6",
 ]
 

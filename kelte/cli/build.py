@@ -3,6 +3,7 @@ import subprocess
 import sys
 
 from ..config import settings
+from ..utils import terminal
 from ..vendored import click
 
 # Notes:
@@ -40,14 +41,12 @@ def build(console, clean, verbose, debug, upx):
         + (" --clean" if clean else "")
         + (" --noupx" if not upx else "")
     )
-    levels = ["ERROR", "WARNING", "INFO", "DEBUG"]
+    levels = ["ERROR", "WARN", "INFO", "DEBUG"]
     log_level = levels[min(verbose, len(levels) - 1)]
     sys_id = sys_id_mapping.get(sys.platform, "linux")
     script_path = settings.package_path / "run.py"
-    # script_path = settings.repo_path / 'kelte' / 'cli' / 'run.py'
     hooks_path = settings.package_path / "scripts" / "pyinstaller" / "hooks"
     build_path = settings.package_path / "build" / sys_id
-    sep = ";" if sys_id == "win" else ":"
     command = " ".join(
         [
             f"pyinstaller {options}",
@@ -55,12 +54,17 @@ def build(console, clean, verbose, debug, upx):
             f"--workpath {build_path}",
             f"--log-level {log_level}",
             f"--additional-hooks-dir {hooks_path}",
-            f"--add-data assets{sep}assets",
             str(script_path),
         ]
     )
-    print(command)
+    subprocess.run(
+        'python setup.py build_ext --inplace',
+        stdout=subprocess.PIPE if not verbose else None,
+        stderr=subprocess.PIPE if not verbose else None,
+        shell=True, check=True)
+    terminal.echo(command, verbose=verbose)
     subprocess.run(command, shell=True, check=True)
+    print(f'Build available under dist/{package_name}')
 
 
 if __name__ == "__main__":

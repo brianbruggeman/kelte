@@ -1,0 +1,17 @@
+- name: Giant
+  lit_color: White
+
+- name: Cyclops
+  lit_color: yellow
+
+- name: Ettin
+  lit_color: purple
+
+- name: Formorian
+  lit_color: light_red
+
+- name: Ogre
+  lit_color: orange
+
+- name: Troll
+  lit_color: green

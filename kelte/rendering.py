@@ -1,9 +1,43 @@
 import tcod as tdl
 
+from .colors import Color
 from .config import settings
+from .ecs import Entity
 from .maths import Position
 from .tiles import Tile
-from .colors import Color
+from .ui.bar import Bar
+from .procgen.levels import Level
+
+
+def render_bar(bar: Bar):
+    position = bar.position
+
+
+def render_entity(entity: Entity):
+    try:
+        position = entity.position
+        tile = entity.tile
+        render_tile(position, tile)
+    except AttributeError:
+        pass
+
+
+def render_level(level: Level):
+    pass
+
+
+def render_log(log: list = None):
+    log = log or settings.main_log
+    panel = settings.log_pane
+    tdl.console_set_default_background(panel, tdl.black)
+    tdl.console_clear(panel)
+    tdl.console_set_default_foreground(panel, tdl.white)
+
+    for row_id, msg in enumerate(log[-7:]):
+        # msg = ''.join(chr(settings.typeface_mapper.get(c) or space) for c in msg)
+        tdl.console_print(panel, 0, row_id, fmt=msg)
+
+    tdl.console_blit(panel, 0, 0, settings.screen_width, settings.log_height, 0, 0, settings.screen_height - settings.log_height)
 
 
 def render_tile(position: Position, tile: Tile, foreground_color: Color = None, background_color: Color = None, background_mode: int = None):

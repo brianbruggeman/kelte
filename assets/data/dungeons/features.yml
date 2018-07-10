@@ -1,13 +1,3 @@
-- name: wall
-  character: '#'
-  lit_color: dark_sepia
-  opaque: True
-
-- name: floor
-  character: '.'
-  lit_color: dark_dark_sepia
-  walkable: True
-
 - name: broken door
   character: "'"
   lit_color: dark_sepia
@@ -54,3 +44,26 @@
   code: 937  # omega
   lit_color: light_blue
   opaque: True
+
+- name: water
+  character: '≈'
+  lit_color: blue
+
+- name: deep water
+  character: '≈'
+  lit_color: dark_blue
+
+- name: gem
+  character: '*'
+
+- name: mineral vein
+  character: '%'
+
+- name: loose stone
+  character: ';'
+
+- name: rubble
+  character: ':'
+  opaque: True
+
+

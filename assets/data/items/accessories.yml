@@ -1,0 +1,9 @@
+- name: ring
+  character: '='
+  walkable: True
+
+
+- name: amulet
+  character: '"'
+  walkable: True
+

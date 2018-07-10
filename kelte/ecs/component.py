@@ -1,5 +1,6 @@
 import typing
 import uuid
+from copy import copy
 from dataclasses import dataclass, field
 
 from .entity import Entity
@@ -22,6 +23,12 @@ class Component:
     name: str = None
     entity: Entity = None
     id: uuid.UUID = field(default_factory=uuid.uuid4)
+
+    def copy(self):
+        new_component = Component(name=self.name)
+        new_component.data = copy(self.data)
+
+        return new_component
 
     def __add__(self, other):
         return self.data + other
@@ -48,6 +55,9 @@ class Component:
         if hasattr(self.data, item):
             return getattr(self.data, item)
         raise AttributeError(f"`Component` object has no attribute `{item}`")
+
+    def __hash__(self):
+        return hash(self.data)
 
     def __iter__(self):
         yield from self.data

@@ -2,9 +2,9 @@ import typing
 from dataclasses import dataclass, field
 
 from ..maths import Position
-from ..tiles import get_tile, Tile
+from ..tiles import Tile, get_tile
 from .cooridors import Cooridor
-from .mobs import Mob
+from ..ecs import Entity
 from .rooms import Room
 
 
@@ -30,7 +30,8 @@ class Level:
     height: int = 0
     rooms: typing.List[Room] = field(default_factory=list)
     cooridors: typing.List[Cooridor] = field(default_factory=list)
-    mobs: typing.List[Mob] = field(default_factory=list)
+    mobs: typing.List[Entity] = field(default_factory=list)
+    items: typing.List[Entity] = field(default_factory=list)
 
     @property
     def grid(self):
@@ -67,9 +68,8 @@ class Level:
                 if 1 <= other.y <= self.height - 1:
                     contained = True
         elif isinstance(other, Room):
-            if other.bounding_box.width + other.position.x < self.width:
-                if other.bounding_box.height + other.position.y < self.height:
-                    contained = True
+            if other.x2 < self.width and other.y2 < self.height:
+                contained = True
         return contained
 
     def _populate(self):

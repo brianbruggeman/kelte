@@ -22,6 +22,10 @@
   lit_color: pink
   opaque: True
 
+- name: centipede
+  lit_color: cyan
+  opaque: True
+
 - name: frog
   lit_color: desaturated_green
   opaque: True

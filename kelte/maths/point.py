@@ -83,9 +83,13 @@ class Point:
 
     def __mul__(self, other):
         cls = self.__class__
-        other = tuple(other) if not isinstance(other, tuple) else other
+        try:
+            other = tuple(other) if not isinstance(other, tuple) else other
+        except TypeError:
+            pass
         answer = np.multiply(tuple(self), other)
         return cls(*tuple(answer))
+
 
     def __set__(self, instance, value):
         instance.__dict__[self.name] = value

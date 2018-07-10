@@ -88,21 +88,21 @@ class KeyboardModifiers:
 
     @sdl_mod.setter
     def sdl_mod(self, value):
-        self.left_shift = tdl.lib.KMOD_LSHIFT & value
-        self.right_shift = tdl.lib.KMOD_RSHIFT & value
+        self.left_shift = bool(tdl.lib.KMOD_LSHIFT & value)
+        self.right_shift = bool(tdl.lib.KMOD_RSHIFT & value)
 
-        self.left_control = tdl.lib.KMOD_LCTRL & value
-        self.right_control = tdl.lib.KMOD_RCTRL & value
+        self.left_control = bool(tdl.lib.KMOD_LCTRL & value)
+        self.right_control = bool(tdl.lib.KMOD_RCTRL & value)
 
-        self.left_alt = tdl.lib.KMOD_LALT & value
-        self.right_alt = tdl.lib.KMOD_RALT & value
+        self.left_alt = bool(tdl.lib.KMOD_LALT & value)
+        self.right_alt = bool(tdl.lib.KMOD_RALT & value)
 
-        self.left_meta = tdl.lib.KMOD_LGUI & value
-        self.right_meta = tdl.lib.KMOD_RGUI & value
+        self.left_meta = bool(tdl.lib.KMOD_LGUI & value)
+        self.right_meta = bool(tdl.lib.KMOD_RGUI & value)
 
-        self.num_key = tdl.lib.KMOD_NUM & value
-        self.caps_key = tdl.lib.KMOD_CAPS & value
-        self.mode_key = tdl.lib.KMOD_MODE & value
+        self.num_key = bool(tdl.lib.KMOD_NUM & value)
+        self.caps_key = bool(tdl.lib.KMOD_CAPS & value)
+        self.mode_key = bool(tdl.lib.KMOD_MODE & value)
 
     def __bool__(self):
         if (
@@ -114,6 +114,17 @@ class KeyboardModifiers:
             or self.num_key
             or self.mode_key
         ):
+            return True
+        return False
+
+    def __eq__(self, other):
+        if (self.shift == other.shift
+            and self.control == other.control
+            and self.alt == other.alt
+            and self.meta == other.meta
+            and self.num_key == other.num_key
+            and self.caps_key == other.caps_key
+            and self.mode_key == other.mode_key):
             return True
         return False
 

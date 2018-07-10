@@ -7,36 +7,6 @@ from ..maths import Position
 from ..tiles import get_tile
 
 
-@dataclass()
-class RoomSize:
-    width: int = 0
-    height: int = 0
-
-
-@dataclass()
-class BoundingBox:
-    x: int = 0
-    y: int = 0
-    width: int = 0
-    height: int = 0
-
-    @property
-    def x2(self):
-        return self.x + self.width
-
-    @property
-    def y2(self):
-        return self.y + self.height
-
-    def __contains__(self, other):
-        contained = False
-        if isinstance(other, Position):
-            if self.x <= other.x < self.x2:
-                if self.y <= other.y < self.y2:
-                    contained = True
-        return contained
-
-
 def in_hull(points, point):
     # Adapted from: https://stackoverflow.com/a/43564754/631199
     number_of_points = len(points)
@@ -49,8 +19,10 @@ def in_hull(points, point):
 
 @dataclass()
 class Room:
+    width: int = 0
+    height: int = 0
+    doors: list = field(default_factory=list)
     position: Position = field(default_factory=Position)
-    bounding_box: BoundingBox = field(default_factory=BoundingBox)
 
     @property
     def lit(self):
@@ -71,14 +43,6 @@ class Room:
         return Position(center_x, center_y)
 
     @property
-    def width(self):
-        return self.bounding_box.width
-
-    @property
-    def height(self):
-        return self.bounding_box.height
-
-    @property
     def x(self):
         return self.position.x
 
@@ -88,11 +52,11 @@ class Room:
 
     @property
     def x2(self):
-        return self.bounding_box.x2
+        return self.x + self.width
 
     @property
     def y2(self):
-        return self.bounding_box.y2
+        return self.y + self.height
 
     @property
     def points(self):
@@ -107,33 +71,37 @@ class Room:
         return np.array(self._grid)
 
     def copy(self):
-        return Room(position=self.position, bounding_box=self.bounding_box)
+        return Room(width=self.width, height=self.height, position=self.position)
+
+    def __contains__(self, other):
+        contained = False
+        try:
+            x, y = other
+            if self.x <= x <= self.x2 and self.y <= y <= self.y2:
+                return True
+        except ValueError:
+            for point, tile in self:
+                if point in other:
+                    contained = True
+                    break
+
+        return contained
 
     def __iter__(self):
         for y, row in enumerate(self.points):
             for x, tile in enumerate(row):
                 yield Position(x + self.x, y + self.y), tile
 
-    def __contains__(self, other):
-        contained = False
-        if isinstance(other, Position):
-            if other in self.bounding_box:
-                return True
+    def __getitem__(self, item):
+        y, x = item
+        return self.points[y][x]
 
-        elif isinstance(other, Room):
-            for point, tile in self:
-                if point in other:
-                    contained = True
-                    break
+    def __setitem__(self, item, value):
+        y, x = item
+        self.points[y][x] = value
 
-        else:
-            contained = True
-            for point, tile in self:
-                if point not in other:
-                    contained = False
-                    break
-
-        return contained
+    def __len__(self):
+        return len(self.points)
 
     def __str__(self):
         data = []

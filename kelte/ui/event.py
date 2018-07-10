@@ -45,7 +45,13 @@ class Event:
         raise NotImplementedError
 
 
+@dataclass()
 class KeyboardEvent(Event):
+    label: str = ''
+    button: int = 0
+    action: UserInputAction = field(default=UserInputAction.PRESSED)
+    keyboard_modifiers: KeyboardModifiers = field(default_factory=KeyboardModifiers)
+
     def __init__(self, label=None, button=None, action=None, **keyboard_modifiers):
         self.label = label or ""
 
@@ -59,7 +65,7 @@ class KeyboardEvent(Event):
         self.keyboard_modifiers = KeyboardModifiers()
         for mod_name, mod_value in keyboard_modifiers.items():
             try:
-                setattr(self.keyboard_modifiers, mod_name, mod_value)
+                setattr(self.keyboard_modifiers, mod_name, bool(mod_value))
             except AttributeError:
                 pass
         self.timestamp = datetime.datetime.utcnow()

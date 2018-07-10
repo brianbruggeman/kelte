@@ -1,0 +1,51 @@
+- name: staff
+  character: '_'
+  walkable: True
+
+- name: wand
+  character: '-'
+  walkable: True
+
+- name: dagger
+  character: '|'
+  walkable: True
+
+- name: sword
+  character: '|'
+  walkable: True
+
+- name: bo
+  character: '|'
+  walkable: True
+
+- name: bow
+  character: '}'
+  walkable: True
+
+- name: crossbow
+  character: '}'
+  walkable: True
+
+- name: sling
+  character: '}'
+  walkable: True
+
+- name: arrow
+  character: '{'
+  walkable: True
+
+- name: bolt
+  character: '{'
+  walkable: True
+
+- name: pebble
+  character: '{'
+  walkable: True
+
+- name: halberd
+  character: '/'
+  walkable: True
+
+- name: spear
+  character: '/'
+  walkable: True

@@ -9,10 +9,9 @@ from pathlib import Path
 
 import freetype as ft
 import numpy as np
-from fuzzywuzzy import fuzz
-from PIL import Image, ImageFont, ImageDraw
-
 from fontTools.ttLib import TTFont
+from fuzzywuzzy import fuzz
+from PIL import Image, ImageDraw, ImageFont
 
 package_path = Path(__file__).parent.parent
 darwin = sys.platform == "darwin"
@@ -154,7 +153,8 @@ class Typeface:
         """Memoizes looking through the typeface unicode availability
         """
         assets_path = package_path / 'assets'
-        path = assets_path / f"{self.path.stem}_typeface.dat"
+        fonts_path = assets_path / 'fonts'
+        path = fonts_path / f"{self.path.stem}_typeface.dat"
         if path.exists():
             with path.open() as stream:
                 data = json.loads(stream.read())
@@ -165,7 +165,8 @@ class Typeface:
     @available.setter
     def available(self, value):
         assets_path = package_path / 'assets'
-        path = assets_path / f"{self.path.stem}_typeface.dat"
+        fonts_path = assets_path / 'fonts'
+        path = fonts_path / f"{self.path.stem}_typeface.dat"
         with path.open("w") as stream:
             stream.write(json.dumps(value))
 
@@ -228,6 +229,7 @@ class Typeface:
     def render(self, size=None, table_name=None, unicode_values=None, filepath=None):
         typeface_size = size or 16
         assets_path = package_path / 'assets'
+        fonts_path = assets_path / 'fonts'
         table_mapping = {
             'cp437': cp437,
             'cp850': cp850,
@@ -257,12 +259,12 @@ class Typeface:
         im = im.crop(im.getbbox())
 
         # write into file
-        default_image_path = assets_path / f"{self.path.stem}.{table_name}.{size}.png"
+        default_image_path = fonts_path / f"{self.path.stem}.{table_name}.{size}.png"
         image_path = filepath or default_image_path
         im.save(str(image_path))
 
         # write out unicode mapping
-        default_map_path = assets_path /  f"{self.path.stem}.{table_name}.map"
+        default_map_path = fonts_path / f"{self.path.stem}.{table_name}.map"
         with default_map_path.open('w') as stream:
             stream.write(json.dumps(unicode_values, indent=4))
 

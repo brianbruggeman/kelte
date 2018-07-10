@@ -1,0 +1,18 @@
+- name: flask
+  character: '!'
+  walkable: True
+
+
+- name: scroll
+  character: '?'
+  walkable: True
+
+
+- name: coins
+  character: '$'
+  walkable: True
+
+
+- name: shredded clothes
+  character: '~'
+  walkable: True

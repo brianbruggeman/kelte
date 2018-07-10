@@ -1,0 +1,7 @@
+- name: chest
+  character: "&"
+
+- name: coffin
+  character: "⚰"
+  lit_color: brown
+
