@@ -1,32 +1,37 @@
-- name: shield
-  character: ')'
-  walkable: True
+defaults:  &defaults
+    walkable: True
+    lit_color: silver
 
-- name: chest armor
-  character: '['
-  walkable: True
 
-- name: leggings armor
-  character: ']'
-  walkable: True
+data:
+  - <<: *defaults
+    name: shield
+    character: ')'
 
-- name: back armor
-  character: '('
-  walkable: True
+  - <<: *defaults
+    name: chest armor
+    character: '['
 
-- name: boots
-  character: ']'
-  walkable: True
+  - <<: *defaults
+    name: leggings armor
+    character: ']'
 
-- name: arm armor
-  character: ']'
-  walkable: True
+  - <<: *defaults
+    name: back armor
+    character: '('
 
-- name: gloves
-  character: ']'
-  walkable: True
+  - <<: *defaults
+    name: boots
+    character: ']'
 
-- name: cloak
-  character: ']'
-  walkable: True
+  - <<: *defaults
+    name: arm armor
+    character: ']'
 
+  - <<: *defaults
+    name: gloves
+    character: ']'
+
+  - <<: *defaults
+    name: cloak
+    character: ']'

@@ -1,17 +1,30 @@
-- name: Giant
-  lit_color: White
+defaults: &defaults
+  opaque: True
+  walkable: False
 
-- name: Cyclops
-  lit_color: yellow
 
-- name: Ettin
-  lit_color: purple
+data:
 
-- name: Formorian
-  lit_color: light_red
+  - <<: *defaults
+    name: Giant
+    lit_color: White
 
-- name: Ogre
-  lit_color: orange
+  - <<: *defaults
+    name: Cyclops
+    lit_color: yellow
 
-- name: Troll
-  lit_color: green
+  - <<: *defaults
+    name: Ettin
+    lit_color: purple
+
+  - <<: *defaults
+    name: Formorian
+    lit_color: light_red
+
+  - <<: *defaults
+    name: Ogre
+    lit_color: orange
+
+  - <<: *defaults
+    name: Troll
+    lit_color: green

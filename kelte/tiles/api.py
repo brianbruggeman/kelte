@@ -30,12 +30,9 @@ def populate_tile_data(file_data):
                 item["character"] = character
             if not item.get("character"):
                 name = item.get('name')
-                try:
-                    item["character"] = name[0]
-                except:
-                    import pdb; pdb.set_trace()
-                    pass
+                item["character"] = name[0]
 
+            item = {k: v for k, v in item.items() if k in Tile.__annotations__}
             Tile(**item)
 
     return Tile.registry
@@ -49,7 +46,7 @@ class Registry(type):
         return new_cls
 
 
-@dataclass()
+@dataclass
 class Tile(metaclass=Registry):
     name: str = "undefined"
     character: str = "?"
@@ -89,7 +86,7 @@ class Tile(metaclass=Registry):
     def rendered(self):
         foreground = self.color.hex
         background = self.background_color.hex
-        string = colr.color(self.c, fore=foreground, back=background)
+        string = colr.color(self.character, fore=foreground, back=background)
         return string
 
     @property
@@ -100,20 +97,13 @@ class Tile(metaclass=Registry):
             return " "
 
     def copy(self):
-        copy_of_self = Tile(
-            name=self.name,
-            character=self.character,
-            lit=self.lit,
-            visible=self.visible,
-            walkable=self.walkable,
-            destructable=self.destructable,
-            flyable=self.flyable,
-            opaque=self.opaque,
-            explored=self.explored,
-        )
-        copy_of_self.lit_color = self.lit_color
-        copy_of_self.unlit_color = self.unlit_color
+        data = {k: getattr(self, k) for k in self.__annotations__}
+        copy_of_self = Tile(**data)
         return copy_of_self
+
+    def __hash__(self):
+        hashed = hash((k, getattr(self, k)) for k in self.__annotations__)
+        return hashed
 
     def __new__(cls, *args, **kwds):
         name = kwds.get("name")

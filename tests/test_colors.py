@@ -1,6 +1,44 @@
 import pytest
 
 
+@pytest.mark.parametrize('data', [
+    {'value': -0.1, 'expected': 0.0},
+    {'value': 0.0, 'expected': 0},
+    {'value': 0.0, 'expected': 0.0},
+    {'value': 0.5, 'expected': 0.5},
+    {'value': 1.0, 'expected': 1.0},
+    {'value': 1.1, 'expected': 1.0},
+    {'value': 255, 'expected': 1.0},
+    {'value': 127, 'expected': 0.4980392156862745},
+    {'value': 63, 'expected': 0.24705882352941178},
+])
+def test_color_convert(data):
+    from kelte.colors import _convert
+
+    value = data.get('value')
+    expected = data.get('expected')
+    fb = _convert(value)
+    assert fb == expected
+
+
+@pytest.mark.parametrize('data', [
+    {'value': -0.1, 'expected': 0.0},
+    {'value': 0.0, 'expected': 0},
+    {'value': 0.0, 'expected': 0.0},
+    {'value': 0.5, 'expected': 0.5},
+    {'value': 1.0, 'expected': 1.0},
+    {'value': 1.1, 'expected': 1.0},
+    {'value': 1.0, 'expected': 255},
+])
+def test_color_float_byte(data):
+    from kelte.colors import FloatByte
+
+    value = data.get('value')
+    expected = data.get('expected')
+    fb = FloatByte(value)
+    assert fb == expected
+
+
 @pytest.mark.parametrize(
     "data",
     [

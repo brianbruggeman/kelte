@@ -1,19 +1,26 @@
-- name: pudding
-  lit_color: darker_orange
+defaults: &defaults
   opaque: True
+  walkable: False
 
-- name: cube
-  lit_color: azure
-  opaque: True
 
-- name: ooze
-  lit_color: red
-  opaque: True
+data:
 
-- name: slime
-  lit_color: green
-  opaque: True
+  - <<: *defaults
+    name: pudding
+    lit_color: darker_orange
 
-- name: jelly
-  lit_color: celadon
-  opaque: True
+  - <<: *defaults
+    name: cube
+    lit_color: azure
+
+  - <<: *defaults
+    name: ooze
+    lit_color: red
+
+  - <<: *defaults
+    name: slime
+    lit_color: green
+
+  - <<: *defaults
+    name: jelly
+    lit_color: celadon

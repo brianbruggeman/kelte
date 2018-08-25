@@ -1,21 +1,30 @@
-- name: Air Elemental
-  character: E
-  unlit_color: light_blue
-  lit_color: lightest_blue
-
-- name: Earth Elemental
-  character: E
-  unlit_color: darker_sepia
-  lit_color: dark_sepia
-
-- name: Fire Elemental
-  character: E
-  unlit_color: dark_red
-  lit_color: red
-
-- name: Water Elemental
-  character: E
-  unlit_color: dark_blue
-  lit_color: blue
+defaults: &defaults
+  opaque: True
+  walkable: False
 
 
+data:
+
+  - <<: *defaults
+    name: Air Elemental
+    character: E
+    unlit_color: light_blue
+    lit_color: lightest_blue
+
+  - <<: *defaults
+    name: Earth Elemental
+    character: E
+    unlit_color: darker_sepia
+    lit_color: brown
+
+  - <<: *defaults
+    name: Fire Elemental
+    character: E
+    unlit_color: dark_red
+    lit_color: red
+
+  - <<: *defaults
+    name: Water Elemental
+    character: E
+    unlit_color: dark_blue
+    lit_color: blue

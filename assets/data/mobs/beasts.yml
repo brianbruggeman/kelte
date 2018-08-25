@@ -1,59 +1,64 @@
-- name: ant
-  lit_color: dark_red
+defaults: &defaults
   opaque: True
 
-- name: ape
-  lit_color: sepia
-  opaque: True
 
-- name: bat
-  lit_color: darker_orange
-  opaque: True
+data:
+  - <<: *defaults
+    name: ant
+    lit_color: dark_red
 
-- name: badger
-  lit_color: sepia
-  opaque: True
+  - <<: *defaults
+    name: ape
+    lit_color: sepia
 
-- name: bear
-  lit_color: dark_orange
-  opaque: True
+  - <<: *defaults
+    name: bat
+    lit_color: darker_orange
 
-- name: boar
-  lit_color: pink
-  opaque: True
+  - <<: *defaults
+    name: badger
+    lit_color: sepia
 
-- name: centipede
-  lit_color: cyan
-  opaque: True
+  - <<: *defaults
+    name: bear
+    lit_color: dark_orange
 
-- name: frog
-  lit_color: desaturated_green
-  opaque: True
+  - <<: *defaults
+    name: boar
+    lit_color: pink
 
-- name: goat
-  lit_color: desaturated_cyan
-  opaque: True
+  - <<: *defaults
+    name: centipede
+    lit_color: cyan
 
-- name: owl
-  lit_color: darkest_yellow
-  opaque: True
+  - <<: *defaults
+    name: frog
+    lit_color: desaturated_green
 
-- name: salamander
-  lit_color: desaturated_red
-  opaque: True
+  - <<: *defaults
+    name: goat
+    lit_color: desaturated_cyan
 
-- name: snake
-  lit_color: lighter_green
-  opaque: True
+  - <<: *defaults
+    name: owl
+    lit_color: darkest_yellow
 
-- name: spider
-  lit_color: lighter_yellow
-  opaque: True
+  - <<: *defaults
+    name: salamander
+    lit_color: desaturated_red
 
-- name: vulture
-  lit_color: copper
-  opaque: True
+  - <<: *defaults
+    name: snake
+    lit_color: lighter_green
 
-- name: wolf
-  lit_color: lighter_han
-  opaque: True
+  - <<: *defaults
+    name: spider
+    lit_color: lighter_yellow
+
+  - <<: *defaults
+    name: vulture
+    lit_color: copper
+
+  - <<: *defaults
+    name: wolf
+    lit_color: lighter_han

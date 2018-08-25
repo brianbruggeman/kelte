@@ -1,4 +1,22 @@
-- name: Myconid
-- name: shrub
-- name: Treant
-- name: tree
+defaults: &defaults
+  opaque: True
+  walkable: False
+  lit_color: green
+
+
+data:
+
+  - <<: *defaults
+    name: Myconid
+
+
+  - <<: *defaults
+    name: shrub
+
+
+  - <<: *defaults
+    name: Treant
+
+
+  - <<: *defaults
+    name: tree

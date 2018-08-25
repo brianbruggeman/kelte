@@ -2,8 +2,9 @@
 import enum
 import typing
 
-from .ecs import Entity
-from .maths import Position
+from kelte.engine.ecs import Entity
+from kelte.engine.maths import Position
+
 from .procgen.levels import Level
 
 
@@ -59,5 +60,3 @@ def update_health(entity: Entity, value: int, type: DamageType):
     health = max(0, min(max_health, health + value))
     entity.health = health
     return health
-
-

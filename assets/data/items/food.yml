@@ -1,19 +1,40 @@
-- name: mushroom
-  character: ','
+defaults: &defaults
   walkable: True
+  character: ','
+  consumable: True
 
-- name: watermellon
-  character: ','
-  walkable: True
 
-- name: tomato
-  character: ','
-  walkable: True
+data:
 
-- name: cucumber
-  character: ','
-  walkable: True
+  - <<: *defaults
+    name: apple
+    lit_color: red
 
-- name: peanut
-  character: ','
-  walkable: True
+  - <<: *defaults
+    name: cabbage
+    lit_color: purple
+
+  - <<: *defaults
+    name: carrot
+    lit_color: orange
+
+  - <<: *defaults
+    name: cucumber
+    lit_color: green
+
+  - <<: *defaults
+    name: mushroom
+    lit_color: dark_grey
+
+  - <<: *defaults
+    name: peanut
+    lit_color: light_brown
+
+  - <<: *defaults
+    name: tomato
+    lit_color: red
+
+  - <<: *defaults
+    name: watermellon
+    lit_color: light_red
+

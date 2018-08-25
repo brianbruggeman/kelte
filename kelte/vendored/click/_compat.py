@@ -564,7 +564,7 @@ if WIN:
         def auto_wrap_for_ansi(stream, color=None):
             """This function wraps a stream so that calls through colorama
             are issued to the win32 console API to recolor on demand.  It
-            also ensures to reset the colors if a write call is interrupted
+            also ensures to clear the colors if a write call is interrupted
             to not destroy the console afterwards.
             """
             try:

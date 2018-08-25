@@ -1,11 +1,22 @@
-- name: dryad
-  lit_color: green
+defaults: &defaults
+  opaque: True
+  walkable: False
 
-- name: pixie
-  lit_color: brown
 
-- name: sprite
-  lit_color: pink
+data:
 
-- name: nymph
-  lit_color: cyan
+  - <<: *defaults
+    name: dryad
+    lit_color: green
+
+  - <<: *defaults
+    name: pixie
+    lit_color: brown
+
+  - <<: *defaults
+    name: sprite
+    lit_color: pink
+
+  - <<: *defaults
+    name: nymph
+    lit_color: cyan

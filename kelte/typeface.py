@@ -9,9 +9,12 @@ from pathlib import Path
 
 import freetype as ft
 import numpy as np
+import tcod as tdl
 from fontTools.ttLib import TTFont
 from fuzzywuzzy import fuzz
 from PIL import Image, ImageDraw, ImageFont
+
+from .utils import terminal
 
 package_path = Path(__file__).parent.parent
 darwin = sys.platform == "darwin"
@@ -125,7 +128,7 @@ class Typeface:
     @property
     def path(self):
         if not hasattr(self, "_path"):
-            path = find_typeface(self.name)
+            path = self.find(self.name)
             if path is None:
                 raise RuntimeError(f"Could not find {self.name}")
             elif not path.exists():
@@ -143,6 +146,16 @@ class Typeface:
         return getattr(self, "_face")
 
     @property
+    def sheets_path(self):
+        assets_path = package_path / 'assets'
+        sheets_path = assets_path / 'fonts'
+        return sheets_path
+
+    @property
+    def dat_path(self):
+        return self.sheets_path / f"{self.path.stem}_typeface.dat"
+
+    @property
     def data(self):
         if not hasattr(self, "_data"):
             self._data = {}
@@ -152,22 +165,17 @@ class Typeface:
     def available(self):
         """Memoizes looking through the typeface unicode availability
         """
-        assets_path = package_path / 'assets'
-        fonts_path = assets_path / 'fonts'
-        path = fonts_path / f"{self.path.stem}_typeface.dat"
+        path = self.dat_path
         if path.exists():
             with path.open() as stream:
                 data = json.loads(stream.read())
                 return data
         else:
-            print(f"Memoized data was not found, building new file.")
+            terminal.echo(terminal.yellow("WARNING: Memoized data was not found, building new file."))
 
     @available.setter
     def available(self, value):
-        assets_path = package_path / 'assets'
-        fonts_path = assets_path / 'fonts'
-        path = fonts_path / f"{self.path.stem}_typeface.dat"
-        with path.open("w") as stream:
+        with self.dat_path.open("w") as stream:
             stream.write(json.dumps(value))
 
     @property
@@ -175,7 +183,12 @@ class Typeface:
         typeface = TTFont(str(self.path))
         return typeface
 
-    def build(self, min_size=None, max_size=None, min_unicode=None, max_unicode=None):
+    def find(self, name: str = None):
+        name = name or self.name
+        path = find_typeface(name)
+        return path
+
+    def load(self, min_size=None, max_size=None, min_unicode=None, max_unicode=None):
         """populates data field based on typeface
 
         Iterates over all possible unicode values up to
@@ -193,11 +206,12 @@ class Typeface:
         min_unicode = min_unicode or 1
         max_unicode = max_unicode or 1024 * 64 - 1
 
+        terminal.echo(f'Loading font face from: {terminal.green(self.path)}')
         available = self.available or []
         times = []
 
         for size in range(min_size, max_size + 1):
-            # print(f'Building bitmaps for pixel size: {size} for {self.name}')
+            terminal.echo(f'Loading: size={terminal.yellow(size)} for {terminal.green(self.path.stem)}: ', end='', flush=True)
             start = time.time()
             pixel_size = PixelSize(size, size)
             self.data.setdefault(size, dict())
@@ -207,7 +221,7 @@ class Typeface:
                     continue
                 char = chr(unicode)
                 # if not available_ready:
-                #     print(f'  {unicode} -> {char}')
+                #     terminal.echo(f'  {unicode} -> {char}')
                 self.face.set_char_size(pixel_size.width * FREETYPE_SCALAR)
                 self.face.load_char(char)
                 slot = self.face.glyph
@@ -225,19 +239,19 @@ class Typeface:
             times.append(duration)
             if not available_ready:
                 self.available = available
+            terminal.echo(f'{duration:0.2f} sec')
 
-    def render(self, size=None, table_name=None, unicode_values=None, filepath=None):
+    def render(self, size=None, layout_name=None, unicode_values=None, filepath=None):
         typeface_size = size or 16
-        assets_path = package_path / 'assets'
-        fonts_path = assets_path / 'fonts'
-        table_mapping = {
+        fonts_path = self.sheets_path
+        layout_mapping = {
             'cp437': cp437,
             'cp850': cp850,
             'cp866': cp866,
             'all': self.available,
             }
-        table_name = table_name or 'all'
-        unicode_values = unicode_values or table_mapping.get(table_name)
+        layout_name = layout_name or 'all'
+        unicode_values = unicode_values or layout_mapping.get(layout_name)
         if not isinstance(unicode_values[0], (list, tuple)):
             count = len(unicode_values)
             shape = self._best_shape(count)
@@ -248,8 +262,9 @@ class Typeface:
         im = Image.new("RGB", (1440, 900))
         draw = ImageDraw.Draw(im)
 
-        typeface_path = find_typeface('Deferral-Square')
+        typeface_path = self.find()
         font = ImageFont.truetype(str(typeface_path), typeface_size)
+        terminal.echo(f'Rendering: size={terminal.yellow(size)} for {terminal.green(self.path.stem)} using {terminal.blue(layout_name)}: ', end='', flush=True)
         for index, row in enumerate(unicode_values):
             text = "".join(chr(c) for c in row)
             index = index * typeface_size
@@ -259,12 +274,13 @@ class Typeface:
         im = im.crop(im.getbbox())
 
         # write into file
-        default_image_path = fonts_path / f"{self.path.stem}.{table_name}.{size}.png"
+        default_image_path = fonts_path / f"{self.path.stem}.{layout_name}.{size}.png"
         image_path = filepath or default_image_path
         im.save(str(image_path))
+        terminal.echo(f'{terminal.magenta(image_path)}')
 
         # write out unicode mapping
-        default_map_path = fonts_path / f"{self.path.stem}.{table_name}.map"
+        default_map_path = fonts_path / f"{self.path.stem}.{layout_name}.map"
         with default_map_path.open('w') as stream:
             stream.write(json.dumps(unicode_values, indent=4))
 
@@ -280,6 +296,43 @@ class Typeface:
                     return True
         return False
 
+    def use(self, layout=None, size=None, flags=None):
+        layout = layout or 'cp437'
+        size = size or 14
+        name = self.path.stem
+
+        # This will be font specific
+        flags = flags or tdl.lib.TCOD_FONT_LAYOUT_ASCII_INROW | tdl.lib.TCOD_FONT_TYPE_GREYSCALE
+
+        sheet_path = self.sheets_path / f'{name}.{layout}.{size}.png'
+        mapper_path = self.sheets_path / f'{name}.{layout}.map'
+        if not mapper_path.exists():
+            terminal.echo(f'Could not find: {terminal.magenta(mapper_path)}')
+            self.load(min_size=size, max_size=size)
+        if not sheet_path.exists():
+            terminal.echo(f'Could not find: {terminal.magenta(sheet_path)}')
+            self.render(size=size, layout_name=layout)
+
+        font_map_data = mapper_path.read_text(encoding='utf-8')
+        mapper = json.loads(font_map_data)
+
+        width, height = len(mapper), len(mapper[0])
+        typeface_data = np.array(mapper).flatten()
+
+        self.typeface_mapper = {
+            chr(value): index
+            for index, value in enumerate(typeface_data)
+            }
+
+        tdl.console_set_custom_font(
+            str(sheet_path),
+            flags=flags,
+            nb_char_vertic=width,
+            nb_char_horiz=height,
+            )
+
+        return self.typeface_mapper
+
     def _best_shape(self, count):
         rows = count
         cols = 1
@@ -293,7 +346,9 @@ class Typeface:
         return shape
 
     def __getitem__(self, key):
-        return self.data[key]
+        character_index = self.typeface_mapper[key]
+        return chr(character_index)
+
 
 
 def find_typeface(name):
@@ -315,6 +370,8 @@ def find_typeface(name):
     ]
 
     qualifier_match_order = {
+        "": 20,
+        "Mono": 15,
         "Regular": 10,
         "Normal": 9,
         "Book": 8,
@@ -338,7 +395,7 @@ def find_typeface(name):
                 # exact matches here are a win
                 return typeface_path
 
-            elif name in typeface_path.name:
+            elif name.lower() in typeface_path.name.lower():
                 possible_matches.append(typeface_path)
 
     # Only do this if we don't have an exact match
@@ -359,13 +416,15 @@ def find_typeface(name):
                 best_qualifier_match = qualifier_match
             else:
                 best_qualifier_match = max(qualifier_match, best_qualifier_match)
-        match_score = (
-            name_match.score + best_qualifier_match.score
-        ) * qualifier_match_order.get(best_qualifier_match.path)
+        bqm_score = best_qualifier_match.score if best_qualifier_match is not None else 0
+        qmo = qualifier_match_order.get(best_qualifier_match.path) if best_qualifier_match is not None else 1
+        match_score = (name_match.score + bqm_score) * qmo
         match = (match_score, typeface_path)
         fuzzy_matched.append(match)
 
-    for score, path in reversed(sorted(fuzzy_matched)):
+    sorted_matches = list(reversed(sorted(fuzzy_matched)))
+
+    for score, path in sorted_matches:
         return path
 
 
@@ -377,16 +436,16 @@ if __name__ == "__main__":
     @click.option('-t', '--table', metavar='NAME', help='table to dump', type=click.Choice(['cp437', 'cp850', 'cp866', 'all']))
     @click.option('-n', '--name', metavar='NAME', help='typeface name', default='Deferral-Square', show_default=True)
     @click.option('-s', '--size', metavar='SIZE', help='typeface size', default=8, show_default=True, type=int)
-    @click.option('-a', '--all', 'all_sizes', is_flag=True, help='build all sizes', show_default=True)
+    @click.option('-a', '--all', 'all_sizes', is_flag=True, help='load all sizes', show_default=True)
     def cli(table, name, size, all_sizes):
         typeface = Typeface(name)
-        start, end = 5, 25
+        start, end = 1, 32
         if all_sizes:
-            typeface.build(start, end)
+            typeface.load(start, end)
             for size in range(start, end + 1):
-                typeface.render(size, table_name=table)
+                typeface.render(size, layout_name=table)
         else:
-            typeface.build(start, end)
-            typeface.render(size, table_name=table)
+            typeface.load(start, end)
+            typeface.render(size, layout_name=table)
 
     cli()

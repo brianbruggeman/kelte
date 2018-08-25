@@ -3,7 +3,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import scipy.optimize as spo
 
-from ..maths import Position
+from kelte.engine.maths import Position
+
 from ..tiles import get_tile
 
 
@@ -17,7 +18,7 @@ def in_hull(points, point):
     return lp.success
 
 
-@dataclass()
+@dataclass
 class Room:
     width: int = 0
     height: int = 0

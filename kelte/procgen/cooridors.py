@@ -1,6 +1,7 @@
 import random
 
-from ..maths import Position
+from kelte.engine.maths import Position
+
 from ..tiles import get_tile
 from .rooms import Room
 

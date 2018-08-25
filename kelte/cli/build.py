@@ -7,7 +7,7 @@ from ..utils import terminal
 from ..vendored import click
 
 # Notes:
-#   Pyinstaller seems to build a bad binary on Windows when:
+#   Pyinstaller seems to load a bad binary on Windows when:
 #     - using upx
 #     - using windowed mode
 
@@ -18,7 +18,7 @@ from ..vendored import click
     "--upx",
     is_flag=True,
     default=True if sys.platform != "win32" else False,
-    help="Create a debug build",
+    help="Create a debug load",
 )
 @click.option(
     "-c/-w",
@@ -26,9 +26,9 @@ from ..vendored import click
     "console",
     is_flag=True,
     default=False,
-    help="Toggle window/console build",
+    help="Toggle window/console load",
 )
-@click.option("-d", "--debug", is_flag=True, help="Create a debug build")
+@click.option("-d", "--debug", is_flag=True, help="Create a debug load")
 @click.option("-C", "--clean", is_flag=True, help="Use pyinstaller clean")
 @click.option("-v", "--verbose", count=True, help="Increase output")
 def build(console, clean, verbose, debug, upx):
@@ -46,7 +46,7 @@ def build(console, clean, verbose, debug, upx):
     sys_id = sys_id_mapping.get(sys.platform, "linux")
     script_path = settings.package_path / "run.py"
     hooks_path = settings.package_path / "scripts" / "pyinstaller" / "hooks"
-    build_path = settings.package_path / "build" / sys_id
+    build_path = settings.package_path / "load" / sys_id
     command = " ".join(
         [
             f"pyinstaller {options}",

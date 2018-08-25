@@ -1,0 +1,11 @@
+defaults: &defaults
+    character: ';'
+    lit_color: silver
+
+
+data:
+    - <<: *defaults
+      name: chisel
+
+    - <<: *defaults
+      name: sharpening stone

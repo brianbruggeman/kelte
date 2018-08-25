@@ -1,56 +1,86 @@
-- name: Acolyte
-  lit_color: gold
+defaults: &defaults
   opaque: True
+  walkable: False
 
-- name: Archmage
-  lit_color: cyan
-  opaque: True
 
-- name: Assassin
-  lit_color: dark_red
-  opaque: True
+data:
 
-- name: Bandit
-  lit_color: dark_azure
-  opaque: True
+  - <<: *defaults
+    name: Acolyte
+    lit_color: gold
 
-- name: Berserker
-  lit_color: crimson
-  opaque: True
+  - <<: *defaults
+    name: Archmage
+    lit_color: cyan
 
-- name: Bugbear
-  lit_color: dark_sea
-  opaque: True
+  - <<: *defaults
+    name: Assassin
+    lit_color: dark_red
 
-- name: Commoner
-- name: Cultist
-- name: Druid
-- name: Gnome
-- name: Gnoll
-- name: Goblin
-  lit_color: darker_green
-  opaque: True
+  - <<: *defaults
+    name: Bandit
+    lit_color: dark_azure
 
-- name: Hobgoblin
-  lit_color: darker_amber
-  opaque: True
+  - <<: *defaults
+    name: Berserker
+    lit_color: crimson
 
-- name: Kobold
-  lit_color: darker_red
-  opaque: True
+  - <<: *defaults
+    name: Bugbear
+    lit_color: dark_sea
 
-- name: Mage
-  lit_color: cyan
-  opaque: True
+  - <<: *defaults
+    name: Commoner
 
-- name: Necromancer
-  lit_color: dark_purple
-  opaque: True
+  - <<: *defaults
+    name: Cultist
 
-- name: Noble
-- name: Orc
-- name: Priest
-- name: Scout
-- name: Spy
-- name: Troglodyte
-- name: Veteran
+  - <<: *defaults
+    name: Druid
+
+  - <<: *defaults
+    name: Gnome
+
+  - <<: *defaults
+    name: Gnoll
+
+  - <<: *defaults
+    name: Goblin
+    lit_color: darker_green
+
+  - <<: *defaults
+    name: Hobgoblin
+    lit_color: darker_amber
+
+  - <<: *defaults
+    name: Kobold
+    lit_color: darker_red
+
+  - <<: *defaults
+    name: Mage
+    lit_color: cyan
+
+  - <<: *defaults
+    name: Necromancer
+    lit_color: dark_purple
+
+  - <<: *defaults
+    name: Noble
+
+  - <<: *defaults
+    name: Orc
+
+  - <<: *defaults
+    name: Priest
+
+  - <<: *defaults
+    name: Scout
+
+  - <<: *defaults
+    name: Spy
+
+  - <<: *defaults
+    name: Troglodyte
+
+  - <<: *defaults
+    name: Veteran

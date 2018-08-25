@@ -1,12 +1,13 @@
 import tcod as tdl
 
+from kelte.engine.ecs import Entity
+from kelte.engine.maths import Position
+from kelte.engine.ui import Bar, Panel
+
 from .colors import Color
 from .config import settings
-from .ecs import Entity
-from .maths import Position
-from .tiles import Tile
-from .ui.bar import Bar
 from .procgen.levels import Level
+from .tiles import Tile
 
 
 def render_bar(bar: Bar):
@@ -14,12 +15,9 @@ def render_bar(bar: Bar):
 
 
 def render_entity(entity: Entity):
-    try:
-        position = entity.position
-        tile = entity.tile
-        render_tile(position, tile)
-    except AttributeError:
-        pass
+    position = entity.position
+    tile = entity.tile
+    render_tile(position, tile)
 
 
 def render_level(level: Level):
@@ -38,6 +36,10 @@ def render_log(log: list = None):
         tdl.console_print(panel, 0, row_id, fmt=msg)
 
     tdl.console_blit(panel, 0, 0, settings.screen_width, settings.log_height, 0, 0, settings.screen_height - settings.log_height)
+
+
+def render_level(level: Level, pane: Panel):
+    pass
 
 
 def render_tile(position: Position, tile: Tile, foreground_color: Color = None, background_color: Color = None, background_mode: int = None):

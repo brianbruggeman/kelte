@@ -2,24 +2,21 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import tcod
-from munch import munchify
 
 from .__metadata__ import package_metadata
 
-pkg_data = munchify(package_metadata)
 
-
-@dataclass()
+@dataclass
 class Settings:
     """Basic defaults"""
 
     # Package
-    name: str = pkg_data.name
+    name: str = package_metadata.name
     package_path: Path = Path(__file__).parent.parent
     assets_path: Path = package_path / "assets"
     data_path: Path = assets_path / "data"
     fonts_path: Path = assets_path / "fonts"
-    version = package_metadata["version"]
+    version = package_metadata.version
 
     # screen data
     screen_width: int = 80
@@ -47,14 +44,23 @@ class Settings:
 
     map_width = screen_width - mob_pane_width
     map_height = screen_height - log_height
+    map_pane: int = 0
+
+    light_pane_width = map_width
+    light_pane_height = map_height
+    light_pane: int = 0
 
     # Misc
+    debug: bool = False
     expletives: list = field(default_factory=list)
     keyboard_bindings = {}
 
     # Map
     dungeon: list = field(default_factory=list)
     current_level: object = None  # actual object
+
+    # Lighting
+    light_intensity_maximum: int = 255
 
 
 settings = Settings()

@@ -1,9 +1,12 @@
-- name: ring
-  character: '='
+defaults: &defaults
   walkable: True
 
 
-- name: amulet
-  character: '"'
-  walkable: True
+data:
+  - <<: *defaults
+    name: ring
+    character: '='
 
+  - <<: *defaults
+    name: amulet
+    character: '"'

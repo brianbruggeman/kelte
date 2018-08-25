@@ -7,31 +7,36 @@ import numpy as np
 import tcod as tdl
 import yaml
 
-from .colors import get_color
-from .config import settings
-from .ecs import Entity
-from .fov import handle_view
-from .lighting import handle_lighting
-from .procgen import create_dungeon
+from kelte.engine.ecs import Entity
 from kelte.items import populate_item_data
 from kelte.mobs import populate_mob_data
-from .rendering import render_entity, render_tile
+from .config import settings
+
+from .colors import get_color, populate_colors
+from .fov import handle_view
+from .lighting import handle_lighting, populate_lighting_data
+
+from .procgen import create_dungeon
+from .rendering import render_tile
 from .tiles import get_tile, populate_tile_data
 from .utils import terminal
 
 
 def find_data(path: typing.Union[str, Path] = None):
+    global settings
+
     data_path = path or settings.data_path
     data = {}
     for data_file in data_path.glob('**/*.yml'):
         rel_data_file = data_file.relative_to(data_path)
         file_items = yaml.load(data_file.read_text(encoding='utf-8'))
+        data_items = file_items.get('data')
         data_type = '.'.join([s.split('.')[0] for s in rel_data_file.parts])
-        data[data_type] = file_items
+        data[data_type] = data_items
     return data
 
 
-def initialize(debug=None, verbose=None, seed=None):
+def initialize(debug=None, verbose=None, seed=None, level_count=None):
     """Initializes game"""
     verbose = 1 if debug else max(int(verbose or 0), 0)  # cap minimum at 0
 
@@ -39,7 +44,7 @@ def initialize(debug=None, verbose=None, seed=None):
     initialize_random_seed(seed=seed, debug=debug, verbose=verbose)
     initialize_typeface(debug=debug, verbose=verbose)
     initialize_console(debug=debug, verbose=verbose)
-    initialize_game_data(debug=debug, verbose=verbose)
+    initialize_game_data(level_count=level_count, debug=debug, verbose=verbose)
     initialize_expletives()
 
     return settings
@@ -77,7 +82,7 @@ def initialize_expletives():
             settings.expletives.append(line)
 
 
-def initialize_game_data(debug=None, verbose=None):
+def initialize_game_data(level_count=None, debug=None, verbose=None):
     global settings
     verbose = 1 if debug else max(int(verbose or 0), 0)  # cap minimum at 0
 
@@ -85,6 +90,7 @@ def initialize_game_data(debug=None, verbose=None):
     populate_tile_data(data)
     populate_mob_data(data)
     populate_item_data(data)
+    populate_lighting_data(data)
 
     # Create a player
     player = Entity(name="player", type='player')
@@ -97,7 +103,7 @@ def initialize_game_data(debug=None, verbose=None):
     settings.player = player
     terminal.echo(f"Created player: {player}", verbose=verbose)
 
-    dungeon = create_dungeon(width=settings.map_width, height=settings.map_height)
+    dungeon = create_dungeon(width=settings.map_width, height=settings.map_height, level_count=level_count)
     settings.dungeon = dungeon
     settings.current_level = dungeon[0]
 
@@ -108,16 +114,17 @@ def initialize_game_data(debug=None, verbose=None):
 
     for position, tile in settings.current_level:
         # setup console
+        entity = settings.entities.get(position)
+        tile = entity.tile if entity else tile
         render_tile(position, tile)
-
-    for position, entity in settings.entities.items():
-        if entity == settings.player:
-            handle_lighting(entity.position, entity.position, settings.current_level)
-            handle_view(entity.position, entity.position, settings.current_level)
-        render_entity(entity)
+        # if entity == settings.player:
+        #     # handle_lighting(None, entity.position, settings.current_level)
+        #     handle_view(None, entity.position, settings.current_level)
 
 
 def initialize_random_seed(seed=None, debug=None, verbose=None):
+    global settings
+
     verbose = 1 if debug else max(int(verbose or 0), 0)  # cap minimum at 0
     seed = seed or random.randint(0, 2 ** 32 - 1)
     settings.seed = seed
@@ -127,6 +134,8 @@ def initialize_random_seed(seed=None, debug=None, verbose=None):
 
 
 def initialize_typeface(name=None, table=None, size=None, debug=None, verbose=None):
+    global settings
+
     verbose = 1 if debug else max(int(verbose or 0), 0)  # cap minimum at 0
     name = name or settings.typeface_name
     table = table or settings.typeface_tablename

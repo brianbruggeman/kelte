@@ -21,7 +21,7 @@ _ansi_colors = (
     "magenta",
     "cyan",
     "white",
-    "reset",
+    "clear",
 )
 _ansi_reset_all = "\033[0m"
 
@@ -377,8 +377,8 @@ def style(
 ):
     """Styles a text with ANSI styles and returns the new string.  By
     default the styling is self contained which means that at the end
-    of the string a reset code is issued.  This can be prevented by
-    passing ``reset=False``.
+    of the string a clear code is issued.  This can be prevented by
+    passing ``clear=False``.
 
     Examples::
 
@@ -396,7 +396,7 @@ def style(
     * ``magenta``
     * ``cyan``
     * ``white`` (might be light gray)
-    * ``reset`` (reset the color code only)
+    * ``clear`` (clear the color code only)
 
     .. versionadded:: 2.0
 
@@ -411,7 +411,7 @@ def style(
     :param reverse: if provided this will enable or disable inverse
                     rendering (foreground becomes background and the
                     other way round).
-    :param reset: by default a reset-all code is added at the end of the
+    :param reset: by default a clear-all code is added at the end of the
                   string which means that styles do not carry over.  This
                   can be disabled to compose styles.
     """

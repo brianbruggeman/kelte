@@ -1,18 +1,17 @@
-- name: flask
-  character: '!'
+defaults: &defaults
   walkable: True
 
 
-- name: scroll
-  character: '?'
-  walkable: True
+data:
+  - name: flask
+    character: '!'
 
+  - name: scroll
+    character: '?'
 
-- name: coins
-  character: '$'
-  walkable: True
+  - name: coins
+    character: '$'
 
+  - name: shredded clothes
+    character: '~'
 
-- name: shredded clothes
-  character: '~'
-  walkable: True

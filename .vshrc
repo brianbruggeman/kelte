@@ -10,7 +10,8 @@ function install_package {
   pip install --upgrade pip
   pip install -e .
   pip install -e .[tests]
-  pip install -e .[build]
+  pip install -e .[load]
+  pip install -e .[debug]
 }
 
 function setup_cli_completion {

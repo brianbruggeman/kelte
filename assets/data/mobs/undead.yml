@@ -1,15 +1,49 @@
-- name: ghast
-- name: ghoul
-- name: ghost
-- name: Lich
-- name: mummy
-- name: phantom
-- name: revenant
-- name: shadow
-- name: skeleton
-- name: specters
-- name: skull
-- name: Vampire
-- name: wight
-- name: wraith
-- name: zombie
+defaults: &defaults
+  lit_color: purple
+
+
+data:
+  - <<: *defaults
+    name: ghast
+
+  - <<: *defaults
+    name: ghoul
+
+  - <<: *defaults
+    name: ghost
+
+  - <<: *defaults
+    name: Lich
+
+  - <<: *defaults
+    name: mummy
+
+  - <<: *defaults
+    name: phantom
+
+  - <<: *defaults
+    name: revenant
+
+  - <<: *defaults
+    name: shadow
+
+  - <<: *defaults
+    name: skeleton
+
+  - <<: *defaults
+    name: specters
+
+  - <<: *defaults
+    name: skull
+
+  - <<: *defaults
+    name: Vampire
+
+  - <<: *defaults
+    name: wight
+
+  - <<: *defaults
+    name: wraith
+
+  - <<: *defaults
+    name: zombie

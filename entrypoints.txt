@@ -2,4 +2,4 @@
 kelte = kelte.cli.run:run
 
 # Pyinstaller building
-build = kelte.cli.build:build
+load = kelte.cli.load:load

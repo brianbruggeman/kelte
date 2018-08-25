@@ -4,31 +4,22 @@ from textwrap import wrap
 
 import tcod as tdl
 
-from .maths import Point
+from kelte.engine.maths import Point
+
+colors = {}
 
 
-def _convert(value):
-    if isinstance(value, int):
-        value = value / 255
-    elif isinstance(value, str) and len(value) == 2:
-        value = int(value, 16) / 255
-    elif isinstance(value, FloatByte):
-        value = value.value
-    if not isinstance(value, float):
-        raise TypeError(f"Value, {value}, must be of type `float` not `{type(value)}`")
-    if value > 1.0:
-        value = 1.0
-    if value < 0.0:
-        value = 0.0
-    if not 0.0 <= value <= 1.0:
-        raise ValueError(f"Value, {value}, must be between `0.0` and `1.0`")
-    return value
-
+def _convert(value: typing.Union[int, float]) -> float:
+    ...
 
 @dataclass
 class FloatByte:
-    value: typing.Any = None
+    value: typing.Union[int, float] = field(default=0.0)
     name: str = "value"
+
+    def __init__(self, value=None, name=None):
+        self.value = _convert(value or 0.0)
+        self.name = name or 'value'
 
     def __get__(self, instance, owner):
         value = instance.__dict__[self.name]
@@ -36,7 +27,7 @@ class FloatByte:
         return value
 
     def __set__(self, instance, value):
-        value = _convert(value)
+        value = _convert(value if value is not None else self.value)
         instance.__dict__[self.name] = value
         self.value = value
 
@@ -44,20 +35,26 @@ class FloatByte:
         self.name = name
 
     def __eq__(self, other):
-        if not isinstance(other, FloatByte):
-            other = FloatByte(other)
+        if isinstance(other, (float, int)):
+            other = _convert(other)
         return self.value == other
 
     def __repr__(self):
-        return f"`{self.value}"
+        return f"{self.value}"
 
 
-@dataclass()
+@dataclass
 class Color(Point):
-    r: FloatByte = field(default=FloatByte(0.0))
-    g: FloatByte = field(default=FloatByte(0.0))
-    b: FloatByte = field(default=FloatByte(0.0))
-    a: FloatByte = field(default=FloatByte(1.0))
+    r: typing.Union[float, int, FloatByte] = field(default=FloatByte(0.0))
+    g: typing.Union[float, int, FloatByte] = field(default=FloatByte(0.0))
+    b: typing.Union[float, int, FloatByte] = field(default=FloatByte(0.0))
+    a: typing.Union[float, int, FloatByte] = field(default=FloatByte(1.0))
+
+    def __init__(self, r=None, g=None, b=None, a=None):
+        self.r = FloatByte(r or 0.0)
+        self.g = FloatByte(g or 0.0)
+        self.b = FloatByte(b or 0.0)
+        self.a = FloatByte(a or 1.0)
 
     @property
     def red(self):
@@ -181,9 +178,9 @@ class Color(Point):
         ar, ag, ab = 1.0, 1.0, 1.0
         dr, dg, db = abs(ar - other.r), abs(ag - other.g), abs(ab - other.b)
 
-        r = dr * other.a * intensity
-        g = dg * other.a * intensity
-        b = dg * other.a * intensity
+        r = self.r + dr * other.a * intensity
+        g = self.g + dg * other.a * intensity
+        b = self.b + dg * other.a * intensity
         new_tint = Color(r, g, b, other.a)
         return new_tint
 
@@ -230,6 +227,9 @@ class Color(Point):
                     return False
         return True
 
+    def __hash__(self):
+        return hash((self.r, self.g, self.b, self.a))
+
     def __lt__(self, other):
         other = tuple(other) if not isinstance(other, (tuple, list)) else other
         return tuple(self) < tuple(other)
@@ -242,25 +242,55 @@ class Color(Point):
 
 
 def get_color(name):
-    return colors.get(name, Color())
+    global colors
+
+    name = name.lower()
+    color = colors[name]
+    return color
 
 
-colors = {}
-for color_name in dir(tdl):
-    tdl_color_value = getattr(tdl, color_name)
-    if isinstance(tdl_color_value, tdl.Color):
-        new_color = Color()
-        new_color.tdl_color = tdl_color_value
-        colors[color_name] = new_color
+def populate_colors():
+    global colors
 
-colors['none'] = Color(0, 0, 0, 0)
-colors['brown'] = Color(139, 69, 19)
-colors['light_brown'] = Color(160, 82, 45)
-colors['lighter_brown'] = Color(205, 133, 63)
-colors['lightest_brown'] = Color(222, 184, 135)
+    for color_name in dir(tdl):
+        tdl_color_value = getattr(tdl, color_name)
+        if isinstance(tdl_color_value, tdl.Color):
+            new_color = Color()
+            new_color.tdl_color = tdl_color_value
+            color_name = color_name.lower()
+            colors[color_name] = new_color
 
-for color_name, color in colors.items():
-    globals()[color_name] = color
+    colors['brown'] = Color(139, 69, 19)
+    colors['light_brown'] = Color(160, 82, 45)
+    colors['lighter_brown'] = Color(205, 133, 63)
+    colors['lightest_brown'] = Color(222, 184, 135)
+    colors['none'] = Color(0, 0, 0, 0)
+
+    for color_name, color in colors.items():
+        globals()[color_name] = color
+
+
+def _convert(value: typing.Union[int, float, FloatByte]) -> float:
+    if value is None:
+        value = 0.0
+    elif isinstance(value, int):
+        value = value / 255
+    elif isinstance(value, str) and len(value) == 2:
+        value = int(value, 16) / 255
+    elif isinstance(value, FloatByte):
+        value = value.value
+    if not isinstance(value, float):
+        raise TypeError(f"Value, {value}, must be of type `float` not `{type(value)}`")
+    if value > 1.0:
+        value = 1.0
+    if value < 0.0:
+        value = 0.0
+    if not 0.0 <= value <= 1.0:
+        raise ValueError(f"Value, {value}, must be between `0.0` and `1.0`")
+    return value
+
+
+populate_colors()
 
 
 if __name__ == "__main__":

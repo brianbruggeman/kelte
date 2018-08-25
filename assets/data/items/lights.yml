@@ -1,0 +1,67 @@
+defaults: &defaults
+  walkable: True
+  lit_color: yellow
+  lit: False
+  character: "'"
+  spectrums:
+    - light
+
+
+wall defaults: &wall_defaults
+  <<: *defaults
+  walkable: False
+  character: '#'
+  lit: True
+  duration: -1
+
+
+magic defaults: &magic_defaults
+  <<: *defaults
+  duration: -1
+  spectrums:
+    - light
+    - spirit
+
+
+data:
+  - <<: *defaults
+    name: candle
+    intensity: 64
+    duration: 20
+
+  - <<: *defaults
+    name: torch
+    intensity: 255
+    duration: 80
+
+  - <<: *defaults
+    name: lantern
+    intensity: 1024
+    duration: 300
+
+  - <<: *wall_defaults
+    name: wall candle
+    intensity: 128
+
+  - <<: *wall_defaults
+    name: wall torch
+    intensity: 512
+
+  - <<: *wall_defaults
+    name: wall lantern
+    intensity: 2048
+
+  - <<: *magic_defaults
+    name: magic candle
+    lit_color: 'red'
+    intensity: 128
+
+  - <<: *magic_defaults
+    name: magic torch
+    lit_color: 'green'
+    intensity: 512
+
+  - <<: *magic_defaults
+    name: magic lantern
+    lit_color: 'violet'
+    intensity: 1024

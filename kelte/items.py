@@ -1,9 +1,8 @@
 import random
 
-from kelte.ecs import Entity
-from kelte.tiles import get_tile, Tile
-from kelte.maths import Position
-
+from kelte.engine.ecs import Entity
+from kelte.engine.maths import Position
+from kelte.tiles import Tile, get_tile
 
 item_registry = {}
 

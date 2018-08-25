@@ -1,1 +1,8 @@
-- name: golem
+defaults: &defaults
+  opaque: True
+
+
+data:
+
+  - <<: *defaults
+    name: golem

@@ -1,7 +1,23 @@
-- name: chest
+defaults: &defaults
+  lit_color: brown
+  walkable: False
+  opaque: False
   character: "&"
 
-- name: coffin
-  character: "⚰"
-  lit_color: brown
 
+data:
+  - <<: *defaults
+    name: box
+    slot_count: 4
+
+  - <<: *defaults
+    name: chest
+    slot_count: 8
+
+  - <<: *defaults
+    name: coffin
+    slot_count: 9
+
+  - <<: *defaults
+    name: urn
+    slot_count: 2

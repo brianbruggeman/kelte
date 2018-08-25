@@ -57,7 +57,7 @@ def main():
 # Commands
 # ----------------------------------------------------------------------
 class CleanCommand(Command, object):
-    description = "Remove build artifacts and *.pyc"
+    description = "Remove load artifacts and *.pyc"
     user_options = list()
 
     def initialize_options(self):
@@ -69,7 +69,7 @@ class CleanCommand(Command, object):
     def run(self):
         repo_path = str(Path(__file__).parent)
         removables = [
-            "build",
+            "load",
             "_build",
             "dist",
             "wheelhouse",
@@ -175,7 +175,7 @@ def find_packages(repo_path=None):
     python_artifacts = ["__pycache__"]
     repo_artifacts = [".*"]
     install_artifacts = ["*.egg-info"]
-    build_artifacts = ["dist", "build"]
+    build_artifacts = ["dist", "load"]
     test_files = ["tests", "test", ".tox"]
     artifacts = (
         install_artifacts
@@ -267,8 +267,10 @@ def get_package_metadata(top_path=None):
             if filepath.name == "__metadata__.py":
                 d = dict(locals(), **globals())
                 exec(filepath.open().read(), d, d)
-                metadata = d.get("package_metadata") or metadata
-                break
+                md = d.get("package_metadata")
+                if md:
+                    metadata.update(md.setup)
+                    break
         if metadata:
             break
 
@@ -321,7 +323,7 @@ def get_package_metadata(top_path=None):
         "builtins",
         "file",
         "cached",
-        "build",
+        "load",
         "all",
     ]
     for baddie in baddies:

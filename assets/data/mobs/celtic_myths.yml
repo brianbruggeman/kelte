@@ -1,1 +1,39 @@
+defaults: &defaults
+  opaque: True
 
+deity defaults: &deity_defaults
+  <<: *defaults
+  lit_color: gold
+
+
+data:
+
+  - <<: *deity_defaults
+    name: Dagda
+
+  - <<: *deity_defaults
+    name: Morrigan
+
+  - <<: *deity_defaults
+    name: Lug
+
+  - <<: *deity_defaults
+    name: Brigid
+
+  - <<: *deity_defaults
+    name: Rhiannon
+
+  - <<: *deity_defaults
+    name: Teyrnon
+
+  - <<: *deity_defaults
+    name: Bran
+
+
+  - <<: *defaults
+    name: Banshee
+    lit_color: dark_green
+
+  - <<: *defaults
+    name: sidhe
+    lit_color: silver

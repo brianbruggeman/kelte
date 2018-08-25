@@ -1,9 +1,8 @@
 import random
 
-from kelte.maths import Position
-from kelte.tiles import get_tile, Tile
-from kelte.ecs import Entity
-
+from kelte.engine.ecs import Entity
+from kelte.engine.maths import Position
+from kelte.tiles import Tile, get_tile
 
 mob_registry = {}
 
@@ -22,10 +21,10 @@ def create_mob(name: str, type: str, tile: Tile = None, health: int = None, inve
     return mob
 
 
-def populate_mob_data(registry):
+def populate_mob_data(data_registry):
     global mob_registry
 
-    for mob_type, data in registry.items():
+    for mob_type, data in data_registry.items():
         if not data:
             continue
         if not mob_type.startswith('mob'):

@@ -1,20 +1,21 @@
 import typing
 from dataclasses import dataclass, field
 
-from ..maths import Position
+from kelte.engine.ecs import Entity
+from kelte.engine.maths import Position
+
 from ..tiles import Tile, get_tile
 from .cooridors import Cooridor
-from ..ecs import Entity
 from .rooms import Room
 
 
-@dataclass()
+@dataclass
 class LevelSize:
     width: int = 0
     height: int = 0
 
 
-@dataclass()
+@dataclass
 class TileStack:
     tiles: typing.List[Tile] = field(default_factory=list)
 
@@ -24,14 +25,40 @@ class TileStack:
             return self.tiles[-1]
 
 
-@dataclass()
+@dataclass
 class Level:
     width: int = 0
     height: int = 0
     rooms: typing.List[Room] = field(default_factory=list)
     cooridors: typing.List[Cooridor] = field(default_factory=list)
-    mobs: typing.List[Entity] = field(default_factory=list)
-    items: typing.List[Entity] = field(default_factory=list)
+    entities: typing.List[Entity] = field(default_factory=list)
+
+    @property
+    def items(self):
+        data_type = 'item'
+        data = []
+        for entity in self.entities:
+            if entity.type == data_type:
+                data.append(entity)
+        return data
+
+    @property
+    def light_sources(self):
+        data_type = 'light'
+        data = []
+        for entity in self.entities:
+            if entity.type == data_type:
+                data.append(entity)
+        return data
+
+    @property
+    def mobs(self):
+        data_type = 'mob'
+        data = []
+        for entity in self.entities:
+            if entity.type == data_type:
+                data.append(entity)
+        return data
 
     @property
     def grid(self):
@@ -94,16 +121,9 @@ class Level:
             for position, tile in cooridor:
                 data[position.y][position.x] = tile
 
-        # blit dungeon artifacts onto level
-
         # blit entities onto levels
-        open_locations = [
-            (x, y)
-            for x in range(self.width)
-            for y in range(self.height)
-            if data[y][x].transparent
-        ]
-
+        for entity in self.entities:
+            data[entity.position] = entity.tile
 
         self._grid = data
 

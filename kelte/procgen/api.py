@@ -1,21 +1,23 @@
 import random
 import typing
 
+from kelte.engine.ecs import Entity
+from kelte.engine.maths import Position
+from kelte.engine.maths.vector import DOWN, DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT, UP, UP_LEFT, UP_RIGHT
+from kelte.items import get_item
+from kelte.mobs import get_mob
+
 from ..config import settings
-from ..maths.vector import UP, UP_RIGHT, UP_LEFT, DOWN, DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT
-from ..maths import Position
 from ..tiles import Tile, get_tile
 from ..utils import terminal
 from .cooridors import Cooridor
 from .levels import Level
-from ..ecs import Entity
-from kelte.mobs import get_mob
-from kelte.items import get_item
 from .rooms import Room
 
 
-def create_door(position: Position, tile: Tile, level: Level) -> typing.Union[Tile, None]:
-    terminal.echo('Adding doors')
+def create_door(position: Position, tile: Tile, level: Level, verbose: typing.Union[int, bool] = None) -> typing.Union[Tile, None]:
+    verbose = max(int(verbose or 0), 0)
+    terminal.echo('Adding doors', verbose=verbose)
     wall = get_tile('wall')
     floor = get_tile('floor')
     if tile.name != 'floor':
@@ -39,7 +41,8 @@ def create_door(position: Position, tile: Tile, level: Level) -> typing.Union[Ti
                 return door
 
 
-def create_dungeon(level_count=None, width=None, height=None):
+def create_dungeon(level_count=None, width=None, height=None, verbose: typing.Union[int, bool] = None):
+    verbose = max(int(verbose or 0), 0)
     level_count = level_count or 5
     width, height = width or random.randint(50, 150), height or random.randint(50, 150)
 
@@ -47,14 +50,14 @@ def create_dungeon(level_count=None, width=None, height=None):
     terminal.echo("Building dungeon...")
     for level_index in range(level_count):
         if level_index == 0:
-            levels.append(create_level(width=width, height=height))
+            levels.append(create_level(width=width, height=height, verbose=verbose - 1))
         else:
             last_level = levels[-1]
             seed_room = random.choice(last_level.rooms).copy()
             # add stairs
             # TODO
             levels.append(create_level(width=width, height=height, rooms=[seed_room]))
-    terminal.echo("Dungeon built...")
+    terminal.echo(f"Dungeon built...{level_count} levels created.")
     return levels
 
 
@@ -64,7 +67,8 @@ def create_item(name: str = None) -> Entity:
     return new_item
 
 
-def create_level(width=None, height=None, room_count: int = None, rooms: typing.List[Room] = None) -> Level:
+def create_level(width=None, height=None, room_count: int = None, rooms: typing.List[Room] = None, verbose: typing.Union[int, bool] = None):
+    verbose = max(int(verbose or 0), 0)
     room_count = room_count or random.randint(8, 12)
     max_attempts = room_count * 5
     width, height = random.randint(50, 150) if width is None else width, random.randint(50, 150) if height is None else height
@@ -74,7 +78,7 @@ def create_level(width=None, height=None, room_count: int = None, rooms: typing.
         level.rooms.extend(rooms)
 
     total_space = width * height
-    terminal.echo('Building rooms')
+    terminal.echo('Building rooms', verbose=verbose)
     for attempt in range(max_attempts):
         # create the room
         position = Position(
@@ -98,8 +102,8 @@ def create_level(width=None, height=None, room_count: int = None, rooms: typing.
         if len(level.rooms) == room_count:
             break
 
-    # build cooridors
-    terminal.echo('Building cooridors')
+    # load cooridors
+    terminal.echo('Building cooridors', verbose=verbose)
     for index, room in enumerate(level.rooms):
         start = level.rooms[index - 1]
         end = room
@@ -107,17 +111,20 @@ def create_level(width=None, height=None, room_count: int = None, rooms: typing.
         level.cooridors.append(cooridor)
 
     open_positions = []
-    level_density = len(open_positions) / total_space
-    terminal.echo(f'Density: {level_density:0.2f}')
+    terminal.echo('Adding doors', verbose=verbose)
     for position, current_tile in level:
         # Add doors
         tile = create_door(position, current_tile, level)
         if tile:
             level[position] = tile
-        else:
+        elif current_tile.name == 'floor':
             open_positions.append(position)
 
+    level_density = len(open_positions) / total_space
+    terminal.echo(f'Density: {level_density:0.2f}', verbose=verbose)
+
     # Add mobs
+    terminal.echo('Adding mobs', verbose=verbose)
     max_mob_count = random.randint(3, len(level.rooms))
     max_attempts = max_mob_count * 2
     for attempt in range(max_attempts):
@@ -129,10 +136,13 @@ def create_level(width=None, height=None, room_count: int = None, rooms: typing.
         open_positions.pop(position_index)
         settings.entities[position] = mob
 
+        level.entities.append(mob)
+
         if len(level.mobs) >= max_mob_count:
             break
 
     # Add items
+    terminal.echo('Adding items', verbose=verbose)
     max_item_count = random.randint(3, len(level.rooms))
     max_attempts = max_item_count * 2
     for attempt in range(max_attempts):
@@ -143,6 +153,8 @@ def create_level(width=None, height=None, room_count: int = None, rooms: typing.
         open_positions.pop(position_index)
         item.position = position
         settings.entities[position] = item
+
+        level.entities.append(item)
 
         if len(level.items) >= max_item_count:
             break

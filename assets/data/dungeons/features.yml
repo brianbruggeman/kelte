@@ -1,69 +1,124 @@
-- name: broken door
-  character: "'"
+defaults: &defaults
+  walkable: False
+  opaque: False
+
+
+door defaults: &door_defaults
+  <<: *defaults
   lit_color: dark_sepia
   walkable: True
-
-- name: closed door
-  character: '+'
-  lit_color: dark_sepia
   opaque: True
 
-- name: hidden door
-  character: '#'
-  lit_color: dark_sepia
-  opaque: True
 
-- name: open door
-  character: '-'
-  lit_color: dark_sepia
-  walkable: True
+mineral defaults: &mineral_defaults
+  <<: *defaults
 
-- name: hidden trap
-  character: '.'
-  lit_color: dark_sepia
-  walkable: True
 
-- name: trap
-  character: '^'
-  lit_color: dark_sepia
-  walkable: True
-
-- name: stairs up
-  character: '<'
+stairs defaults: &stairs_defaults
+  <<: *defaults
   lit_color: light_grey
   walkable: True
   opaque: True
 
-- name: stairs down
-  character: '>'
-  lit_color: light_grey
+
+trap defaults: &trap_defaults
+  <<: *defaults
+  lit_color: dark_sepia
   walkable: True
-  opaque: True
 
-- name: fountain
-  code: 937  # omega
-  lit_color: light_blue
-  opaque: True
 
-- name: water
-  character: '≈'
+water defaults: &water_defaults
+  <<: *defaults
   lit_color: blue
-
-- name: deep water
-  character: '≈'
-  lit_color: dark_blue
-
-- name: gem
-  character: '*'
-
-- name: mineral vein
-  character: '%'
-
-- name: loose stone
-  character: ';'
-
-- name: rubble
-  character: ':'
-  opaque: True
+  walkable: True
 
 
+data:
+
+  - <<: *defaults
+    name: altar
+    code: 937  # omega
+    lit_color: green
+
+
+  - <<: *door_defaults
+    name: broken door
+    character: "'"
+
+  - <<: *door_defaults
+    name: closed door
+    character: '+'
+    walkable: False
+    opaque: True
+
+  - <<: *door_defaults
+    name: hidden door
+    character: '#'
+    walkable: False
+    opaque: True
+
+  - <<: *door_defaults
+    name: open door
+    character: '-'
+
+
+
+  - <<: *mineral_defaults
+    name: gem
+    character: '*'
+
+  - <<: *mineral_defaults
+    name: loose stone
+    character: ';'
+
+  - <<: *mineral_defaults
+    name: rubble
+    character: ':'
+    opaque: True
+    walkable: False
+
+
+
+  - <<: *stairs_defaults
+    name: stairs up
+    character: '<'
+
+  - <<: *stairs_defaults
+    name: stairs down
+    character: '>'
+
+
+
+  - <<: *trap_defaults
+    name: hidden trap
+    character: '.'
+
+  - <<: *trap_defaults
+    name: trap
+    character: '^'
+
+  - <<: *trap_defaults
+    name: wall trap
+    character: '^'
+    walkable: False
+
+  - <<: *trap_defaults
+    name: hidden wall trap
+    character: '#'
+    walkable: False
+
+
+
+  - <<: *water_defaults
+    name: fountain
+    code: 937  # omega
+    opaque: True
+
+  - <<: *water_defaults
+    name: water
+    character: '≈'
+
+  - <<: *water_defaults
+    name: deep water
+    character: '≈'
+    lit_color: 'dark_blue'

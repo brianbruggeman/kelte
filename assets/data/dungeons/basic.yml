@@ -1,12 +1,21 @@
-- name: empty
-  character: ' '
-
-- name: wall
-  character: '#'
+defaults: &defaults
+  walkable: False
+  opaque: False
+  passable: False
   lit_color: sepia
-  opaque: True
 
-- name: floor
-  character: '·'
-  lit_color: sepia
-  walkable: True
+
+data:
+  - <<: *defaults
+    name: empty
+    character: ' '
+
+  - <<: *defaults
+    name: wall
+    character: '#'
+    opaque: True
+
+  - <<: *defaults
+    name: floor
+    character: '·'
+    walkable: True

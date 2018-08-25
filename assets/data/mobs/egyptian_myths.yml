@@ -1,0 +1,9 @@
+defaults: &defaults
+  opaque: True
+  walkable: False
+
+
+data:
+
+  - <<: *defaults
+    name: golem

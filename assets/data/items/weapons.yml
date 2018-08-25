@@ -1,51 +1,142 @@
-- name: staff
+defaults: &defaults
+  walkable: True
+
+
+stick defaults: &stick_defaults
+  <<: *defaults
   character: '_'
-  walkable: True
+  lit_color: brown
+  range:
+    minumum: 0
+    maximum: 2
+  material:
+      - wood
 
-- name: wand
-  character: '-'
-  walkable: True
 
-- name: dagger
+rod defaults: &rod_defaults
+  <<: *defaults
   character: '|'
-  walkable: True
+  lit_color: silver
+  range:
+    minumum: 0
+    maximum: 1
+  materials:
+      - metal
 
-- name: sword
-  character: '|'
-  walkable: True
 
-- name: bo
-  character: '|'
-  walkable: True
-
-- name: bow
+bow defaults: &bow_defaults
+  <<: *defaults
   character: '}'
-  walkable: True
+  lit_color: 'brown'
+  range:
+    minumum: 3
+    maximum: 10
+  matrials:
+      - wood
+      - metal
 
-- name: crossbow
-  character: '}'
-  walkable: True
 
-- name: sling
-  character: '}'
-  walkable: True
-
-- name: arrow
-  character: '{'
-  walkable: True
-
-- name: bolt
-  character: '{'
-  walkable: True
-
-- name: pebble
-  character: '{'
-  walkable: True
-
-- name: halberd
+polarm defaults: &polearm_defaults
+  <<: *defaults
   character: '/'
-  walkable: True
+  lit_color: 'brown'
+  range:
+    minumum: 0
+    maximum: 3
+  materials:
+      - wood
+      - metal
 
-- name: spear
-  character: '/'
-  walkable: True
+
+bolt defaults: &bolt_defaults
+  <<: *defaults
+  character: '{'
+  lit_color: 'light_grey'
+  range:
+    minumum: 0
+    maximum: 20
+  matrials:
+  - wood
+  - stone
+
+
+data:
+  - <<: *stick_defaults
+    name: bo
+
+  - <<: *stick_defaults
+    name: staff
+
+  - <<: *stick_defaults
+    name: wand
+
+
+
+  - <<: *rod_defaults
+    name: axe
+
+  - <<: *rod_defaults
+    name: dagger
+
+  - <<: *rod_defaults
+    name: flachion
+
+  - <<: *rod_defaults
+    name: gladius
+
+  - <<: *rod_defaults
+    name: sword
+
+  - <<: *rod_defaults
+    name: broad sword
+
+  - <<: *rod_defaults
+    name: great sword
+
+  - <<: *rod_defaults
+    name: long sword
+
+  - <<: *rod_defaults
+    name: seax
+
+
+
+  - <<: *bow_defaults
+    name: bow
+
+  - <<: *bow_defaults
+    name: crossbow
+
+  - <<: *bow_defaults
+    name: sling
+
+
+
+  - <<: *bolt_defaults
+    name: arrow
+
+  - <<: *bolt_defaults
+    name: bolt
+
+  - <<: *bolt_defaults
+    name: pebble
+
+
+
+  - <<: *polearm_defaults
+    name: bardiche
+
+  - <<: *polearm_defaults
+    name: glaive
+
+  - <<: *polearm_defaults
+    name: halberd
+
+  - <<: *polearm_defaults
+    name: lance
+
+  - <<: *polearm_defaults
+    name: pike
+
+  - <<: *polearm_defaults
+    name: spear
